@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 526" width="520" height="526" aria-hidden="true">
+  <defs>
+    <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#bddbb9" opacity=".29"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1l5 3-5 3" fill="none" stroke="#d2ecb5" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <path fill="#20382e" d="M0 0h520v526H0z"/>
+  <path fill="url(#dots)" d="M0 0h520v526H0z"/>
+  <path d="M31 39h458M31 487h458" stroke="#819888" opacity=".55"/>
+  <g font-family="monospace" font-size="11" letter-spacing="1.6" fill="#d2ecb5">
+    <text x="31" y="28">RK / SISTEMAS EM OPERAÇÃO</text>
+    <text x="444" y="28">FIG 01</text>
+    <text x="31" y="508">SUPORTE · INTEGRAÇÃO · DADOS</text>
+    <text x="438" y="508">SP / BR</text>
+  </g>
+  <g fill="none" stroke="#789a85" opacity=".6">
+    <circle cx="261" cy="260" r="177"/><circle cx="261" cy="260" r="134"/><circle cx="261" cy="260" r="90"/>
+    <path d="M261 67v386M66 260h390" stroke-dasharray="4 6"/>
+    <path d="M123 123l276 274M123 397l276-274" stroke-dasharray="3 7"/>
+  </g>
+  <path d="M261 131c93 0 152 94 120 180M139 322c-26-59-12-121 39-162M302 424c-51 18-110 2-149-34" fill="none" stroke="#d2ecb5" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M174 180l86 81 91-61m-91 61-48 103" fill="none" stroke="#d2ecb5" stroke-width="2.2"/>
+  <path d="M261 220l42 40-42 40-42-40z" fill="#d2ecb5"/>
+  <path d="M249 260h24m-12-12v24" stroke="#20382e" stroke-width="2"/>
+  <circle cx="174" cy="180" r="12" fill="#e7ad72" stroke="#20382e" stroke-width="3"/>
+  <circle cx="351" cy="200" r="12" fill="#e7ad72" stroke="#20382e" stroke-width="3"/>
+  <circle cx="212" cy="364" r="12" fill="#e7ad72" stroke="#20382e" stroke-width="3"/>
+  <g fill="#d2ecb5" font-family="monospace" font-size="12" font-weight="bold" letter-spacing="1.3">
+    <text x="94" y="163">CHAMADO</text><text x="370" y="191">EVENTO</text><text x="120" y="372">DADOS</text>
+  </g>
+  <g fill="#20382e" stroke="#819888">
+    <rect x="32" y="53" width="8" height="8"/><rect x="480" y="53" width="8" height="8"/>
+    <rect x="32" y="466" width="8" height="8"/><rect x="480" y="466" width="8" height="8"/>
+  </g>
+</svg>

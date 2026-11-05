@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1793917838972,
+      "tag": "0000_farol_sessions",
+      "breakpoints": true
+    }
+  ]
+}
