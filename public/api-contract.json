@@ -1,0 +1,1180 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Laboratórios de engenharia de Raphael Kaych",
+    "version": "2.0.0",
+    "description": "Contrato HTTP dos laboratórios de demonstração com dados fictícios."
+  },
+  "servers": [
+    {
+      "url": "https://raphael-kaych.raphaelvindex.chatgpt.site"
+    }
+  ],
+  "paths": {
+    "/api/qualitygate": {
+      "post": {
+        "summary": "Comparar a regra de estoque com uma falha injetada",
+        "description": "O HTTP 200 indica que o experimento foi executado. Os códigos dentro do resultado pertencem às duas execuções isoladas.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scenario": {
+                    "type": "string",
+                    "enum": [
+                      "stock",
+                      "replay",
+                      "role"
+                    ]
+                  }
+                },
+                "required": [
+                  "scenario"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comparação concluída",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityComparison"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Tamanho máximo excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Use application/json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados fora do contrato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ledgerflow": {
+      "get": {
+        "summary": "Consultar a sessão e as últimas operações",
+        "security": [
+          {
+            "DemoSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estado da sessão",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "$ref": "#/components/schemas/LedgerState"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sessão ausente ou expirada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Armazenamento indisponível ou limite de sessões atingido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Abrir sessão ou alterar lançamentos",
+        "description": "A abertura é pública. As ações exigem token e perfil analista. O CSV aceita somente campos do formato da demonstração.",
+        "security": [
+          {},
+          {
+            "DemoSession": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "iniciar"
+                      },
+                      "role": {
+                        "type": "string",
+                        "enum": [
+                          "analista",
+                          "leitor"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "role"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "importar"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 60
+                      },
+                      "csv": {
+                        "type": "string",
+                        "maxLength": 4096
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "version",
+                      "csv"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "conciliar"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 60
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "version"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "criar"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 60
+                      },
+                      "reference": {
+                        "type": "string",
+                        "pattern": "^LF-[0-9]{4,6}$"
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "banco",
+                          "sistema"
+                        ]
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "cents": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 99999999
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "version",
+                      "reference",
+                      "origin",
+                      "date",
+                      "cents"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "atualizar"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 60
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "reference": {
+                        "type": "string",
+                        "pattern": "^LF-[0-9]{4,6}$"
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "banco",
+                          "sistema"
+                        ]
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "cents": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 99999999
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "version",
+                      "id",
+                      "reference",
+                      "origin",
+                      "date",
+                      "cents"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "remover"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 60
+                      },
+                      "id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "version",
+                      "id"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ação registrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "$ref": "#/components/schemas/LedgerState"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Sessão criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "$ref": "#/components/schemas/LedgerState"
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "Token temporário devolvido uma vez na abertura da sessão."
+                    }
+                  },
+                  "required": [
+                    "state",
+                    "token"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Perfil leitor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sessão ausente ou expirada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revisão ou lançamento em conflito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "$ref": "#/components/schemas/LedgerState"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Tamanho máximo excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Use application/json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados fora do contrato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Armazenamento indisponível ou limite de sessões atingido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/farol": {
+      "get": {
+        "summary": "Consultar fila, relógio e histórico",
+        "security": [
+          {
+            "DemoSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estado atual",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "$ref": "#/components/schemas/FarolState"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sessão ausente ou expirada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Armazenamento indisponível ou limite de sessões atingido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Abrir cenário ou registrar ação do Farol",
+        "security": [
+          {},
+          {
+            "DemoSession": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "iniciar"
+                      },
+                      "scenario": {
+                        "type": "string",
+                        "enum": [
+                          "instavel",
+                          "indisponivel"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "scenario"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "enum": [
+                          "enviar-1042",
+                          "enviar-1047",
+                          "enviar-1051",
+                          "rodada",
+                          "recuperar",
+                          "reprocessar"
+                        ]
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 32
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "version"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ação registrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "$ref": "#/components/schemas/FarolState"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Cenário aberto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "$ref": "#/components/schemas/FarolState"
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "Token temporário devolvido uma vez na abertura da sessão."
+                    }
+                  },
+                  "required": [
+                    "state",
+                    "token"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sessão ausente ou expirada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revisão em conflito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "$ref": "#/components/schemas/FarolState"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "state",
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Tamanho máximo excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Use application/json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados fora do contrato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Armazenamento indisponível ou limite de sessões atingido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "DemoSession": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Identificador e segredo da sessão de demonstração."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "QualityComparison": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "stock",
+              "replay",
+              "role"
+            ]
+          },
+          "input": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "operador",
+                  "leitor"
+                ]
+              }
+            },
+            "required": [
+              "ref",
+              "quantity",
+              "role"
+            ]
+          },
+          "invariant": {
+            "type": "string"
+          },
+          "control": {
+            "type": "object",
+            "properties": {
+              "responses": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "enum": [
+                        200,
+                        201,
+                        403,
+                        409,
+                        422
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "receipt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "reason"
+                  ]
+                }
+              },
+              "inventory": {
+                "type": "object",
+                "properties": {
+                  "available": {
+                    "type": "integer"
+                  },
+                  "receipts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "ref": {
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "ref",
+                        "quantity"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "available",
+                  "receipts"
+                ]
+              },
+              "conforms": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "responses",
+              "inventory",
+              "conforms"
+            ]
+          },
+          "injected": {
+            "type": "object",
+            "properties": {
+              "responses": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "enum": [
+                        200,
+                        201,
+                        403,
+                        409,
+                        422
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "receipt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "reason"
+                  ]
+                }
+              },
+              "inventory": {
+                "type": "object",
+                "properties": {
+                  "available": {
+                    "type": "integer"
+                  },
+                  "receipts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "ref": {
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "ref",
+                        "quantity"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "available",
+                  "receipts"
+                ]
+              },
+              "conforms": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "responses",
+              "inventory",
+              "conforms"
+            ]
+          }
+        },
+        "required": [
+          "scenario",
+          "input",
+          "invariant",
+          "control",
+          "injected"
+        ]
+      },
+      "LedgerEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string",
+            "pattern": "^LF-[0-9]{4,6}$"
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "banco",
+              "sistema"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "cents": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99999999
+          },
+          "manual": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "reference",
+          "origin",
+          "date",
+          "cents"
+        ]
+      },
+      "LedgerState": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LedgerEntry"
+            },
+            "maxItems": 48
+          },
+          "reconciled": {
+            "type": "boolean"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "analista",
+              "leitor"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 60
+          },
+          "audit": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "action": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "revision",
+                "action",
+                "detail",
+                "at"
+              ]
+            },
+            "maxItems": 12
+          }
+        },
+        "required": [
+          "entries",
+          "reconciled",
+          "role",
+          "revision",
+          "audit"
+        ]
+      },
+      "FarolState": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "instavel",
+              "indisponivel"
+            ]
+          },
+          "now": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "manualRecovery": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "order": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "fila",
+                    "retentativa",
+                    "entregue",
+                    "dlq"
+                  ]
+                },
+                "due": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "attempts": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "cycleAttempts": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "id",
+                "order",
+                "name",
+                "status",
+                "due",
+                "attempts",
+                "cycleAttempts"
+              ]
+            }
+          },
+          "audit": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "eventId": {
+                  "type": "string"
+                },
+                "http": {
+                  "type": "integer"
+                },
+                "nextAt": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "at",
+                "kind"
+              ]
+            }
+          }
+        },
+        "required": [
+          "scenario",
+          "now",
+          "manualRecovery",
+          "version",
+          "events",
+          "audit"
+        ]
+      }
+    }
+  }
+}

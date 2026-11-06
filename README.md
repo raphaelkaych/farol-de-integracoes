@@ -1,67 +1,45 @@
-# Farol de Integrações
+# Portfólio de engenharia · Raphael Kaych
 
-Um pedido chega ao ERP durante uma indisponibilidade. O Farol registra o evento, limita as retentativas e mantém o histórico quando o pedido precisa voltar da quarentena para a fila.
+[Portfólio público](https://raphael-kaych.raphaelvindex.chatgpt.site/) · [Vitrine de projetos](https://raphael-kaych.raphaelvindex.chatgpt.site/projetos) · [Execuções de CI](https://github.com/raphaelkaych/farol-de-integracoes/actions/workflows/validar.yml)
 
-**[Abrir a demonstração](https://raphael-kaych.raphaelvindex.chatgpt.site/farol)** · [Portfólio](https://raphael-kaych.raphaelvindex.chatgpt.site/) · [Pesquisa de mercado](validacao-de-mercado.md) · [Execuções dos testes](https://github.com/raphaelkaych/farol-de-integracoes/actions)
+Aplicação que reúne estudos de caso e laboratórios de desenvolvimento, qualidade e integração de sistemas. O repositório começou como Farol de Integrações e hoje também contém a vitrine e dois módulos de demonstração.
 
-## Teste em um minuto
+| Laboratório | Código e documentação | Demo |
+| --- | --- | --- |
+| QualityGate Studio | [Comparação de referência e defeito](docs/qualitygate-studio.md) | [Executar cenários](https://raphael-kaych.raphaelvindex.chatgpt.site/qualitygate) |
+| LedgerFlow | [Conciliação e auditoria](docs/ledgerflow.md) | [Importar um extrato fictício](https://raphael-kaych.raphaelvindex.chatgpt.site/ledgerflow) |
+| Farol de Integrações | [Retentativas e recuperação](docs/farol.md) | [Recuperar um pedido](https://raphael-kaych.raphaelvindex.chatgpt.site/farol) |
 
-1. Selecione **ERP instável**. Reenvie PC-1042 e confirme que há um evento único e um duplicado no histórico.
-2. Execute três rodadas. Os retornos simulados são `503`, `503` e `200`, no relógio virtual `+0s`, `+30s` e `+90s`.
-3. Selecione **ERP fora do ar** e execute três rodadas. O pedido vai para a DLQ, a fila de quarentena. Restaure o ERP, reprocesse a DLQ e execute mais uma rodada. O mesmo identificador chega ao destino com as quatro tentativas no histórico.
+## Instalação local
 
-A demo roda sem cadastro e usa pedidos fictícios. O servidor registra cada ação no banco relacional. O relógio e as respostas do ERP são simulados.
-
-## Arquitetura
-
-```mermaid
-flowchart LR
-    UI["Painel React"] -->|JSON, HTTPS| API["API TypeScript"]
-    API -->|"valida sessão e revisão"| SQL[("D1 / SQLite")]
-    SQL -->|"carrega diário em ordem"| CORE["Motor de eventos"]
-    CORE -->|"fila, backoff, DLQ e auditoria"| API
-    API -->|"anexa ação de forma condicional"| SQL
-    API -->|"devolve o estado atualizado"| UI
-```
-
-- **Idempotência do evento.** Repetir o mesmo ID registra um reenvio no histórico sem abrir outro item na fila.
-- **Concorrência da API.** Cada mutação envia a revisão que o painel leu. O SQL só acrescenta a próxima ação se essa revisão ainda for a mais recente. A chave composta de sessão e sequência reforça a regra. Uma disputa retorna `409` e o estado atual.
-- **Retentativas e DLQ.** Atrasos de 30 e 60 segundos no relógio da demo, até três tentativas por ciclo. Reprocessar reinicia o ciclo de tentativas e preserva o ID e a contagem total.
-- **Isolamento.** O servidor guarda só o hash do segredo da sessão. A sessão vence em duas horas e aceita até 32 ações. O primeiro acesso de uma nova sessão remove sessões vencidas e aplica o limite global da demo.
-
-| Caminho | Conteúdo |
-| --- | --- |
-| [lib/farol/model.ts](lib/farol/model.ts) | Regras do fluxo e reconstrução do estado pelo diário |
-| [lib/farol/store.ts](lib/farol/store.ts) | Consultas e escrita condicional no banco |
-| [app/api/farol/route.ts](app/api/farol/route.ts) | Rota HTTP servida pelo Worker |
-| [components/farol-panel.tsx](components/farol-panel.tsx) | Controles, fila e histórico no navegador |
-| [drizzle/](drizzle/) e [tests/](tests/) | Migração versionada e testes com SQLite |
-
-O escopo é um laboratório. A rodada é acionada por quem está testando, e a resposta do ERP vem do cenário. Uma integração real exigiria execução agendada, autenticação do emissor, armazenamento adequado ao volume e tratamento de falhas de rede fora da simulação.
-
-## Rode localmente
-
-Use Node.js 24 e npm. O Wrangler executa o Worker e fornece um banco D1 local.
+Use Node.js 24 e npm.
 
 ```sh
 npm ci
+npm run build
+node scripts/preview-e2e.mjs 18790
+```
+
+Abra [http://127.0.0.1:18790](http://127.0.0.1:18790). O script cria um banco D1 local isolado e aplica as migrações na ordem. Encerre com Ctrl+C. Para usar um banco local que sobreviva entre execuções do Wrangler, aplique as migrações uma vez em `.wrangler/state` e use `npm start`.
+
+Nenhuma chave é necessária para a prévia. `PLAYWRIGHT_BASE_URL` permite direcionar a suíte a uma prévia já iniciada. `PLAYWRIGHT_BROWSERS_PATH` pode apontar para o cache local de navegadores.
+
+## Testes e evidências
+
+```sh
 npm test
 npm run typecheck
 npm run build
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_farol_sessions.sql
-npm start
+npx playwright install chromium
+npm run test:e2e
 ```
 
-Aplique a migração uma vez para cada banco local. Abra o caminho `/farol` no endereço impresso pelo Wrangler. O repositório também serve a página de portfólio e as demonstrações de Plantão de TI, Ponte ERP e Pulso da Operação.
+Os testes com node:test cobrem domínio e contratos do servidor. Playwright cobre a interface, as APIs e regressões do Farol. axe avalia páginas selecionadas usando critérios WCAG. O CI publica o relatório, a captura e o trace da falha controlada do QualityGate. A execução local grava o relatório em `playwright-report/`. Use apenas dados fictícios nas demos.
 
-## Contrato HTTP da demo
+## Decisões e contexto
 
-As chamadas usam `Content-Type: application/json` para POST. O corpo de uma ação tem até 1 KiB.
-
-| Operação | Requisição | Retorno |
-| --- | --- | --- |
-| Iniciar | `POST /api/farol` com `{"action":"iniciar","scenario":"indisponivel"}` | `201`, token temporário e estado |
-| Ler | `GET /api/farol` com `Authorization: Bearer <token>` | `200`, estado atual |
-| Executar rodada | `POST /api/farol` com o token e `{"action":"rodada","version":0}` | `200`, estado novo, ou `409`, estado atual se outra ação chegou primeiro |
-
-O CI no GitHub executa os testes de domínio e API, valida TypeScript e compila a aplicação. Os testes cobrem retentativas, reprocessamento, duplicidade, isolamento de sessão e duas escritas na mesma revisão.
+- [Auditoria da versão anterior](docs/auditoria.md)
+- [Arquitetura, design e deploy](docs/arquitetura-portfolio.md)
+- [Pesquisa de mercado e referências](docs/mercado-e-referencias.md)
+- [Contrato OpenAPI](public/api-contract.json)
+- [Prioridades de evolução](docs/backlog.md)

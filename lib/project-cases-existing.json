@@ -1,0 +1,166 @@
+[
+  {
+    "slug": "farol-de-integracoes",
+    "context": "Quando um ERP fica indisponível, cada evento precisa de um destino claro. Um reenvio pode chegar enquanto uma tentativa está pendente, e uma falha longa exige quarentena e recuperação com o histórico intacto.",
+    "goal": "Acompanhar um pedido desde o recebimento até a entrega ou a fila de quarentena (DLQ). A demonstração permite restaurar o ERP simulado e reprocessar o mesmo evento.",
+    "architecture": [
+      {
+        "title": "Painel React",
+        "text": "O visitante abre um cenário e envia ações JSON para /api/farol com a revisão que está vendo."
+      },
+      {
+        "title": "API no Worker",
+        "text": "A API valida o corpo, a sessão temporária e a revisão. As ações permitidas formam o contrato da demonstração."
+      },
+      {
+        "title": "Diário em D1",
+        "text": "A persistência acrescenta a próxima ação quando a sequência esperada ainda é a última do diário. A chave composta reforça a unicidade."
+      },
+      {
+        "title": "Motor de eventos",
+        "text": "O TypeScript reconstrói fila e auditoria a partir do diário. Cada rodada avança o relógio virtual até o próximo evento pronto."
+      }
+    ],
+    "decisions": [
+      {
+        "title": "Escrita por revisão",
+        "text": "Duas ações que partem da mesma revisão disputam a próxima posição do diário. Uma grava e a outra recebe HTTP 409 com o estado atualizado."
+      },
+      {
+        "title": "Retentativas reproduzíveis",
+        "text": "Os atrasos fixos de 30 e 60 segundos e o limite de três tentativas por ciclo tornam a sequência previsível. O relógio avança quando o visitante executa uma rodada."
+      },
+      {
+        "title": "O mesmo evento atravessa a recuperação",
+        "text": "Reenviar um ID conhecido gera uma linha de auditoria, sem duplicar o item na fila. O reprocessamento da DLQ preserva o ID e a contagem total de tentativas."
+      }
+    ],
+    "quality": "A sessão expira em duas horas e aceita até 32 ações. O banco guarda apenas o hash do segredo da sessão, e a API limita a entrada JSON a 1 KiB.",
+    "tests": "Os testes de domínio cobrem agendamento, deduplicação e recuperação da DLQ. Os testes da API executam as consultas de produção em SQLite e verificam isolamento, expiração, entradas inválidas e o conflito de duas escritas na mesma revisão.",
+    "limits": "O ERP, o relógio e os resultados de entrega são simulados. A demonstração registra ações em D1 e executa rodadas sob demanda.",
+    "next": "Em uma integração real, acrescentar um processador assíncrono com retentativas escalonadas e jitter, autenticação do emissor e telemetria por evento.",
+    "snippet": "AND (SELECT COALESCE(MAX(seq), 0) FROM farol_actions WHERE run_id = r.id) = ?\nON CONFLICT (run_id, seq) DO NOTHING",
+    "snippetLabel": "lib/farol/store.ts · condição da escrita"
+  },
+  {
+    "slug": "plantao-ti",
+    "context": "Uma queda de ERP e um pedido de acesso podem entrar na fila com poucos minutos de diferença. Prioridade e tempo decorrido determinam o prazo que precisa de atenção primeiro.",
+    "goal": "Ordenar incidentes abertos pelo vencimento, identificar atrasos e guardar quando cada resolução ocorreu.",
+    "architecture": [
+      {
+        "title": "Entrada pela CLI",
+        "text": "Os comandos abrir, fila e resolver recebem a prioridade, o título ou o identificador do incidente."
+      },
+      {
+        "title": "Regra de prazo",
+        "text": "O Python calcula o prazo a partir da abertura em UTC. P1, P2 e P3 têm 60, 240 e 1.440 minutos corridos."
+      },
+      {
+        "title": "Fila em SQLite",
+        "text": "A consulta ordena por prazo e mantém os incidentes resolvidos separados. A resolução atualiza somente um chamado aberto."
+      }
+    ],
+    "decisions": [
+      {
+        "title": "Prazo como critério de ordenação",
+        "text": "Um P3 antigo pode vencer antes de um P1 recém-aberto. A prioridade define o prazo, e o prazo orienta a posição na fila."
+      },
+      {
+        "title": "Fechamento protegido",
+        "text": "A atualização condicional preserva o instante da primeira resolução. Resolver exatamente no prazo conta como dentro do SLA."
+      }
+    ],
+    "quality": "A CLI restringe os valores de prioridade, valida o título e usa parâmetros nas consultas SQL. O modelo recebe o instante por argumento, o que permite testar o limite do prazo sem esperar o relógio.",
+    "tests": "A suíte unittest verifica a ordem da fila, a separação de chamados resolvidos, o fechamento repetido e a passagem de dentro do prazo para atraso.",
+    "limits": "A versão Python grava em SQLite para um operador local. A versão web mantém o estado na página, usa um relógio simulado e reinicia ao recarregar.",
+    "next": "Modelar expediente e pausas de SLA antes de estender a fila a múltiplos operadores.",
+    "snippet": "SELECT * FROM incidente WHERE resolvido_em IS NULL OR ?\nORDER BY resolvido_em IS NOT NULL, prazo_em, prioridade, id",
+    "snippetLabel": "plantao.py · ordenação da fila"
+  },
+  {
+    "slug": "ponte-erp",
+    "context": "Um emissor pode reenviar um webhook quando perde a resposta. O receptor precisa reconhecer o mesmo pedido e distinguir uma repetição legítima de um evento reaproveitado com dados diferentes.",
+    "goal": "Validar a assinatura do pedido, persistir o primeiro recebimento e devolver respostas distintas para sucesso, duplicidade e conflito.",
+    "architecture": [
+      {
+        "title": "Emissor de exemplo",
+        "text": "O script gera um pedido fictício e assina os bytes do corpo com HMAC-SHA256."
+      },
+      {
+        "title": "Receptor HTTP",
+        "text": "O servidor Python recebe POST /webhooks/pedidos em loopback. Ele valida a assinatura antes de interpretar e verificar o JSON."
+      },
+      {
+        "title": "Transação SQLite",
+        "text": "As chaves únicas de pedido e de evento impedem uma segunda gravação. O receptor consulta o registro existente para distinguir repetição de conflito."
+      },
+      {
+        "title": "Resultado do webhook",
+        "text": "O primeiro envio válido devolve 201. A repetição compatível devolve 200 e um conflito devolve 409. Assinaturas inválidas recebem 401."
+      }
+    ],
+    "decisions": [
+      {
+        "title": "HMAC sobre os bytes recebidos",
+        "text": "A assinatura é conferida antes do parse. O servidor usa comparação de tempo constante e lê o segredo de uma variável de ambiente."
+      },
+      {
+        "title": "Deduplicação no banco",
+        "text": "A inserção inicia a transação e o próprio SQLite decide a unicidade. Se dois envios concorrentes chegam juntos, só um insere."
+      },
+      {
+        "title": "Centavos inteiros",
+        "text": "O contrato valida o valor como inteiro positivo e compara o valor registrado com o recebido antes de aceitar a repetição."
+      }
+    ],
+    "quality": "O receptor valida rota, tipo e tamanho do corpo, formato dos identificadores e valor. Uma falha operacional de armazenamento recebe HTTP 503.",
+    "tests": "A suíte unittest cobre assinatura incorreta, JSON inválido, tipos e IDs inválidos, conflito de evento ou pedido e seis reenvios concorrentes com uma única gravação.",
+    "limits": "A demonstração web usa Web Crypto com uma chave pública de exemplo e mantém o pedido na página. O receptor real deste laboratório é o servidor local em Python com SQLite.",
+    "next": "Acrescentar validade de assinaturas e uma caixa de saída transacional antes de conectar o receptor a um ERP real.",
+    "snippet": "INSERT INTO pedido VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
+    "snippetLabel": "ponte.py · inserção condicional"
+  },
+  {
+    "slug": "pulso-operacao",
+    "context": "Duas áreas podem ter o mesmo volume e níveis de risco diferentes. Um recorte temporal ajuda a separar chamados vencidos ainda abertos de chamados já resolvidos.",
+    "goal": "Medir volume, fila vencida e cumprimento de SLA por área em uma data de referência reproduzível.",
+    "architecture": [
+      {
+        "title": "CSV fictício",
+        "text": "A base contém 18 chamados com área, abertura, prazo e fechamento opcional."
+      },
+      {
+        "title": "Ingestão em SQLite",
+        "text": "O Python normaliza as datas em UTC, carrega a base em memória e verifica a coerência temporal dos registros."
+      },
+      {
+        "title": "Agregação em SQL",
+        "text": "Uma CTE reconstitui o estado de cada chamado no horário de corte. A consulta agrupa e ordena os indicadores por área."
+      },
+      {
+        "title": "Relatório e demonstração",
+        "text": "A CLI gera HTML para um corte informado. O portfólio compara três recortes previamente calculados pela mesma consulta."
+      }
+    ],
+    "decisions": [
+      {
+        "title": "Reconstrução no horário de corte",
+        "text": "A consulta inclui só os chamados abertos até a referência. Um fechamento posterior permanece em aberto naquele recorte."
+      },
+      {
+        "title": "Denominador explícito de SLA",
+        "text": "O percentual considera as resoluções observadas no recorte. Uma área sem resoluções aparece sem percentual."
+      },
+      {
+        "title": "Recortes calculados uma vez",
+        "text": "A demonstração web lê os resultados exportados em JSON. Os cálculos e a base continuam reproduzíveis pelo código Python e SQL."
+      }
+    ],
+    "quality": "A importação usa parâmetros, datas normalizadas e restrições de ordem temporal. O gerador escapa o texto da área antes de inseri-lo no HTML.",
+    "tests": "A suíte unittest confere as contagens globais, os resultados de áreas específicas, o percentual exibido no HTML e o estado vazio antes do primeiro chamado.",
+    "limits": "O conjunto de dados é fictício. A interface do portfólio oferece três horários fixos, e o gerador Python calcula outros horários informados pela CLI.",
+    "next": "Versionar recortes de uma série histórica e verificar automaticamente que os JSONs publicados correspondem à consulta.",
+    "snippet": "CASE WHEN fechado_em <= :referencia THEN fechado_em END AS resolvido_em",
+    "snippetLabel": "indicadores.sql · resolução observável no recorte"
+  }
+]

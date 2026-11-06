@@ -1,17 +1,27 @@
 import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "../components/portfolio-chrome";
+import { github, siteUrl } from "../lib/portfolio-meta";
 import "./globals.css";
+import "./portfolio.css";
+import "./labs.css";
+
+const description = "Portfólio de Raphael Kaych. Projetos de desenvolvimento full stack, APIs, testes e integração de sistemas, com demos e código público.";
 
 export const metadata: Metadata = {
-  title: { default: "Raphael Kaych | Portfólio em TI", template: "%s | Raphael Kaych" },
-  description: "Análise de sistemas, desenvolvimento e operações de TI. Conheça a trajetória e experimente os projetos de Raphael Kaych.",
+  metadataBase: new URL(siteUrl),
+  title: { default: "Raphael Kaych | Software e qualidade", template: "%s | Raphael Kaych" },
+  description,
   icons: { icon: "/favicon.svg" },
   openGraph: {
-    title: "Raphael Kaych | Portfólio em TI",
-    description: "Análise de sistemas, desenvolvimento e operações de TI.",
-    locale: "pt_BR",
-    type: "website",
+    title: "Raphael Kaych | Software e qualidade", description, locale: "pt_BR", type: "website",
+    images: [{ url: "/compartilhamento.png", width: 1200, height: 630, alt: "Raphael Kaych, desenvolvimento de software e qualidade" }],
   },
+  twitter: { card: "summary_large_image", title: "Raphael Kaych | Software e qualidade", description, images: ["/compartilhamento.png"] },
+};
+
+const identity = {
+  "@context": "https://schema.org", "@type": "Person", name: "Raphael Kaych", url: siteUrl,
+  sameAs: [github], alumniOf: { "@type": "EducationalOrganization", name: "ETEC de Praia Grande" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         {children}
         <SiteFooter />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(identity) }} />
       </body>
     </html>
   );

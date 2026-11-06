@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PlantaoDemo, PonteDemo, PulsoDemo } from "../../../components/classic-labs";
-import { github } from "../../../components/portfolio-chrome";
+import { github, pageMetadata } from "../../../lib/portfolio-meta";
 
 const labs = {
   "plantao-ti": {
@@ -32,7 +32,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const lab = getLab(slug);
-  return lab ? { title: lab.title, description: lab.description } : {};
+  return lab ? pageMetadata(lab.title, lab.description, "/demos/" + slug) : {};
 }
 
 export default async function DemoPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -40,10 +40,10 @@ export default async function DemoPage({ params }: { params: Promise<{ slug: str
   const lab = getLab(slug);
   if (!lab) notFound();
   return (
-    <main id="conteudo" className="shell lab">
-      <a className="text-link" href="/#projetos">← Voltar aos projetos</a>
+    <main id="conteudo" tabIndex={-1} className="shell lab">
+      <a className="back-link" href={"/projetos/" + slug}>← Estudo de caso</a>
       <div className="lab-title">
-        <p className="eyebrow">{lab.index} / DEMONSTRAÇÃO</p>
+        <p className="eyebrow"><span /> {lab.index} / DEMONSTRAÇÃO</p>
         <h1>{lab.title}</h1>
         <p>{lab.description}</p>
         <a className="text-link" href={github + "/" + slug}>Ver código original <span aria-hidden="true">↗</span></a>
