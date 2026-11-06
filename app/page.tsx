@@ -24,24 +24,12 @@ const notes = [
 const headline = ["Software que", "passa pelo teste."];
 
 function Headline() {
-  let index = 0;
   return (
     <h1 className="hero-title" aria-label={headline.join(" ")}>
       {headline.map((line, lineIndex) => (
-        <span key={line} aria-hidden="true" className={"type-line type-line-" + lineIndex}>
-          {line.split(" ").map((word, wordIndex, words) => (
-            <span className="type-group" key={wordIndex}>
-              <span className="type-word">
-                {Array.from(word).map((char, charIndex) => {
-                  const delay = 140 + index++ * 29;
-                  const last = lineIndex === headline.length - 1 && wordIndex === words.length - 1 && charIndex === word.length - 1;
-                  return <span className={"type-char" + (last ? " type-last" : "")} key={charIndex}
-                    style={{ "--delay": delay + "ms" } as CSSProperties}>{char}</span>;
-                })}
-              </span>
-              {wordIndex < words.length - 1 && " "}
-            </span>
-          ))}
+        <span key={line} aria-hidden="true" className={"type-line type-line-" + lineIndex}
+          style={{ "--steps": line.length, "--delay": lineIndex === 0 ? "110ms" : "480ms" } as CSSProperties}>
+          <span className="type-text">{line}</span>
         </span>
       ))}
     </h1>

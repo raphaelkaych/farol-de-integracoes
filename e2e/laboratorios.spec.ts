@@ -103,6 +103,27 @@ test("Farol continua recuperando um pedido da quarentena", async ({ page }) => {
   await expect(page.getByRole("row", { name: /evt-1042 Entregue 4/ })).toBeVisible();
 });
 
+test("Plantão, Ponte e Pulso preservam seus fluxos no navegador", async ({ page }) => {
+  await page.goto("/demos/plantao-ti");
+  await page.getByRole("textbox", { name: "Chamado fictício" }).fill("Teste de regressão");
+  await page.getByRole("button", { name: "Abrir chamado", exact: true }).click();
+  const incident = page.getByRole("row", { name: /Teste de regressão/ });
+  await expect(incident).toBeVisible();
+  await incident.getByRole("button", { name: "Resolver chamado 4" }).click();
+  await expect(incident).toContainText("Resolvido no prazo");
+
+  await page.goto("/demos/ponte-erp");
+  for (const name of ["Enviar pedido", "Reenviar o mesmo pedido", "Reenviar com outro valor", "Enviar com assinatura inválida"]) {
+    await page.getByRole("button", { name, exact: true }).click();
+  }
+  for (const name of ["201", "200", "409", "401"]) await expect(page.getByRole("cell", { name, exact: true })).toBeVisible();
+
+  await page.goto("/demos/pulso-operacao");
+  await expect(page.getByText("75%", { exact: true })).toBeVisible();
+  await page.getByRole("combobox", { name: "Data de referência (UTC)" }).selectOption("2");
+  await expect(page.getByText("77%", { exact: true })).toBeVisible();
+});
+
 test.describe("Evidência de falha controlada", () => {
   test("um leitor nunca deveria conseguir criar uma reserva", async ({ page }, testInfo) => {
     await page.goto("/qualitygate");

@@ -155,6 +155,7 @@
 }
 @media (max-width: 555px) {
   .feature-grid, .notes-grid, .career-grid, .milestones, .catalog-grid { grid-template-columns: minmax(0, 1fr); }
+  main > .section { content-visibility: auto; contain-intrinsic-size: auto 32rem; }
 }
 @media print {
   :root { color-scheme: light; --ink: #111; --muted: #333; --accent: #123866; --line: #aaa; }

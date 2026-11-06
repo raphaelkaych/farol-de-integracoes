@@ -75,7 +75,7 @@ test("título é legível sem JavaScript e com movimento reduzido", async ({ bro
     const page = await context.newPage();
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Software que passa pelo teste." })).toBeVisible();
-    await expect(page.locator(".type-char").first()).toHaveCSS("opacity", "1");
+    await expect(page.locator(".type-text").first()).toHaveCSS("clip-path", "none");
     await expect(page.getByRole("link", { name: "Explorar projetos" })).toBeVisible();
   } finally {
     await context.close();
@@ -84,8 +84,8 @@ test("título é legível sem JavaScript e com movimento reduzido", async ({ bro
 
 test("a digitação revela todas as letras e o atalho pula para o conteúdo", async ({ page }) => {
   await page.goto("/");
-  await expect.poll(() => page.locator(".type-char").evaluateAll((letters) =>
-    letters.every((letter) => getComputedStyle(letter).opacity === "1")
+  await expect.poll(() => page.locator(".type-text").evaluateAll((lines) =>
+    lines.every((line) => getComputedStyle(line).clipPath === "none")
   )).toBe(true);
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Ir para o conteúdo" })).toBeFocused();
@@ -102,7 +102,7 @@ test("metadados, recursos e rotas legadas respondem", async ({ request }) => {
     expect(response.status(), path).toBe(200);
     expect(await response.text()).toContain('rel="canonical"');
   }
-  for (const path of ["/robots.txt", "/sitemap.xml", "/compartilhamento.png", "/hero-diagrama.svg", "/api-contract.json"]) {
+  for (const path of ["/robots.txt", "/sitemap.xml", "/compartilhamento.png", "/hero-diagrama.svg", "/api-contract.json", "/evidencias/qualitygate-permissao.png"]) {
     expect((await request.get(path)).status(), path).toBe(200);
   }
   expect((await request.get("/projetos/projeto-inexistente")).status()).toBe(404);
