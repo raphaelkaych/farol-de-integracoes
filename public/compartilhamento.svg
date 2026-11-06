@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Portfólio de Raphael Kaych</title>
+  <desc id="desc">Desenvolvimento de software &amp; qualidade</desc>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1">
+      <stop stop-color="#05070D"/>
+      <stop offset=".64" stop-color="#080F20"/>
+      <stop offset="1" stop-color="#102444"/>
+    </linearGradient>
+    <radialGradient id="blue" cx=".82" cy=".45" r=".48">
+      <stop stop-color="#377FFB" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#377FFB" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#75A9FF" stroke-opacity=".11"/>
+    </pattern>
+    <linearGradient id="line" x2="1">
+      <stop stop-color="#253955"/>
+      <stop offset=".61" stop-color="#75A9FF"/>
+      <stop offset="1" stop-color="#253955"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <rect width="1200" height="630" fill="url(#blue)"/>
+  <path d="M823 0H1200V630H634Z" fill="url(#grid)"/>
+  <path d="M633 630 822 0M669 630 858 0M1028 630 1200 57" stroke="#253955" stroke-opacity=".5"/>
+  <circle cx="967" cy="310" r="110" fill="none" stroke="#377FFB" stroke-opacity=".34" stroke-dasharray="4 8"/>
+  <circle cx="967" cy="310" r="94" fill="none" stroke="#377FFB" stroke-opacity=".44"/>
+  <path d="M814 347h38l34-37h12M1038 310h36l31-32h44M969 379v32l28 28h57M966 241v-34l-28-28h-37"
+    fill="none" stroke="#75A9FF" stroke-opacity=".68" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M803 387h61l34-37M1028 245h33l29-28h42M933 384v37l-39 40h-56"
+    fill="none" stroke="#253955" stroke-width="1.8" stroke-linejoin="round"/>
+  <g fill="#080F20" stroke="#75A9FF" stroke-width="1.5">
+    <circle cx="814" cy="347" r="4"/><circle cx="1149" cy="278" r="4"/>
+    <circle cx="1054" cy="439" r="4"/><circle cx="901" cy="179" r="4"/>
+  </g>
+  <path d="M967 233 1044 310 967 387 890 310Z" fill="#102444" stroke="#75A9FF" stroke-width="2"/>
+  <path d="M967 251 1026 310 967 369 908 310Z" fill="#152E52" stroke="#377FFB"/>
+  <path d="M955 291 936 310l19 19M979 291l19 19-19 19" fill="none" stroke="#F1F6FF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m973 282-12 56" stroke="#75A9FF" stroke-width="2.8" stroke-linecap="round"/>
+  <path d="M77 117h1046M77 511h1046" stroke="url(#line)" stroke-opacity=".65"/>
+  <rect x="77" y="155" width="11" height="11" rx="2" fill="#377FFB"/>
+  <g font-family="ui-monospace, Consolas, DejaVu Sans Mono, monospace" letter-spacing="3.5" fill="#A7B8D0">
+    <text x="104" y="167" font-size="17">PORTFÓLIO TÉCNICO</text>
+    <text x="77" y="550" font-size="15">PRAIA GRANDE · BR</text>
+    <text x="1123" y="550" font-size="15" text-anchor="end">RAPHAEL KAYCH</text>
+  </g>
+  <g font-family="Segoe UI, DejaVu Sans, Arial, sans-serif">
+    <text x="70" y="319" font-size="92" font-weight="700" letter-spacing="-3" fill="#F1F6FF">Raphael Kaych</text>
+    <text x="77" y="386" font-size="32" font-weight="500" fill="#A7B8D0">Desenvolvimento de software <tspan fill="#75A9FF">&amp;</tspan> qualidade</text>
+  </g>
+</svg>

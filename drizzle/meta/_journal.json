@@ -8,6 +8,13 @@
       "when": 1793917838972,
       "tag": "0000_farol_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1794001433292,
+      "tag": "0001_ledgerflow_sessions",
+      "breakpoints": true
     }
   ]
 }

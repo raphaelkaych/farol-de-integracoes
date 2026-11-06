@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Sitemap: https://raphael-kaych.raphaelvindex.chatgpt.site/sitemap.xml
