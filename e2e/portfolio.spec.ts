@@ -69,7 +69,7 @@ test("layout em 360, 768 e 1440 px e navegação mobile", async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
-test("título é legível sem JavaScript e com movimento reduzido", async ({ browser, baseURL }) => {
+test("título é legível e controles do TraceAtlas ficam desabilitados sem JavaScript", async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: "reduce" });
   try {
     const page = await context.newPage();
@@ -77,6 +77,9 @@ test("título é legível sem JavaScript e com movimento reduzido", async ({ bro
     await expect(page.getByRole("heading", { name: "Software que passa pelo teste." })).toBeVisible();
     await expect(page.locator(".type-text").first()).toHaveCSS("clip-path", "none");
     await expect(page.getByRole("link", { name: "Explorar projetos" })).toBeVisible();
+    await page.goto("/traceatlas");
+    await expect(page.getByRole("combobox", { name: "Cenário", exact: true })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Executar cenário" })).toBeDisabled();
   } finally {
     await context.close();
   }
