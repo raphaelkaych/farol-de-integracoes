@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="250" viewBox="0 0 600 250" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Fluxo de integração fiscal</title>
+  <desc id="descricao">Ilustração conceitual de um documento fiscal em fluxo para a SEFAZ.</desc>
+  <defs>
+    <linearGradient id="surface" x2="0" y2="1">
+      <stop stop-color="#152e52"/>
+      <stop offset="1" stop-color="#080f20"/>
+    </linearGradient>
+    <linearGradient id="flow">
+      <stop stop-color="#75a9ff" stop-opacity=".45"/>
+      <stop offset=".52" stop-color="#75a9ff"/>
+      <stop offset="1" stop-color="#75a9ff" stop-opacity=".78"/>
+    </linearGradient>
+    <radialGradient id="halo">
+      <stop stop-color="#377ffb" stop-opacity=".14"/>
+      <stop offset="1" stop-color="#377ffb" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="300" cy="105" rx="285" ry="104" fill="url(#halo)"/>
+  <g fill="none" stroke="#75a9ff" stroke-width="1" stroke-opacity=".23">
+    <path d="M25 76h21l19-19h72m438 19h-21l-19-19h-72"/>
+    <path d="M25 155h23l22 22h55m450-22h-23l-22 22h-55"/>
+    <path d="M40 105h520M141 30v191m318-191v191" stroke-dasharray="2 7"/>
+    <path d="M260 61h80m-80 88h80"/>
+  </g>
+  <g fill="#75a9ff" opacity=".45">
+    <circle cx="25" cy="76" r="2"/><circle cx="575" cy="76" r="2"/>
+    <circle cx="25" cy="155" r="2"/><circle cx="575" cy="155" r="2"/>
+  </g>
+
+  <g fill="none" stroke="#75a9ff" stroke-opacity=".13">
+    <rect x="76" y="40" width="130" height="130" rx="19"/>
+    <rect x="394" y="40" width="130" height="130" rx="19"/>
+  </g>
+  <g fill="url(#surface)" stroke="#75a9ff" stroke-opacity=".46" stroke-width="1.4">
+    <rect x="83" y="47" width="116" height="116" rx="14"/>
+    <rect x="401" y="47" width="116" height="116" rx="14"/>
+  </g>
+
+  <path d="M199 105h202" fill="none" stroke="url(#flow)" stroke-width="2"/>
+  <g fill="#0b172c" stroke="#75a9ff" stroke-width="1.7">
+    <circle cx="199" cy="105" r="4"/><circle cx="401" cy="105" r="4"/>
+    <path d="m300 93 12 12-12 12-12-12Z"/>
+  </g>
+  <path d="m298 100 5 5-5 5" fill="none" stroke="#75a9ff" stroke-width="1.7"
+    stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g fill="none" stroke="#75a9ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M126 79h23l12 12v39a3 3 0 0 1-3 3h-32a3 3 0 0 1-3-3V82a3 3 0 0 1 3-3Z"/>
+    <path d="M148 79v10a3 3 0 0 0 3 3h10m-30 9h22m-22 9h22m-22 9h13"/>
+    <path d="M116 123V77a5 5 0 0 1 5-5h23" opacity=".42"/>
+    <rect x="435" y="82" width="48" height="14" rx="3"/>
+    <rect x="435" y="99" width="48" height="14" rx="3"/>
+    <rect x="435" y="116" width="48" height="14" rx="3"/>
+    <path d="M456 89h18m-18 17h18m-18 17h18" opacity=".54"/>
+  </g>
+  <g fill="#75a9ff">
+    <circle cx="444" cy="89" r="1.8"/><circle cx="444" cy="106" r="1.8"/><circle cx="444" cy="123" r="1.8"/>
+  </g>
+
+  <g fill="#f1f6ff" text-anchor="middle" font-family="Consolas, DejaVu Sans Mono, monospace"
+    font-size="21" font-weight="700" letter-spacing="1.35">
+    <text x="141" y="206">DOCUMENTO</text>
+    <text x="459" y="206">SEFAZ</text>
+  </g>
+</svg>

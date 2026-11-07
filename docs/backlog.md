@@ -1,6 +1,6 @@
 # Próximas prioridades
 
-Os sete casos e suas demos são os projetos disponíveis nesta versão. As propostas a seguir têm critérios de entrada para que possam ser publicadas como aplicações verificáveis.
+Os oito casos e suas demos são os projetos disponíveis nesta versão. As propostas a seguir têm critérios de entrada para que possam ser publicadas como aplicações verificáveis.
 
 | Prioridade | Entrega | Critério para publicar |
 | --- | --- | --- |

@@ -73,5 +73,26 @@ export const cases: readonly Case[] = [
     snippet: "const durations = traces.map((trace) => trace.durationMs).sort((a, b) => a - b);\nconst p95 = durations[Math.ceil(durations.length * .95) - 1];",
     snippetLabel: "lib/traceatlas/model.ts · cálculo do P95",
   },
+  {
+    slug: "radar-de-retorno",
+    context: "Uma integração pode receber HTTP 200 e ainda encontrar um protocolo no formato errado ou uma rejeição de negócio.",
+    goal: "Conferir o código HTTP, validar a estrutura do JSON e indicar se o fluxo pode avançar, aguardar, revisar ou tentar mais tarde.",
+    architecture: [
+      { title: "Editor da resposta", text: "O visitante carrega um exemplo ou edita o status HTTP e o JSON diretamente na página." },
+      { title: "Validação do contrato", text: "O navegador verifica o código de transporte, interpreta o JSON e aplica uma união de esquemas Zod pelo campo estado." },
+      { title: "Decisão e diagnóstico", text: "O resultado explica a ação sugerida e mostra quais campos revisar quando o contrato diverge." },
+    ],
+    decisions: [
+      { title: "Verificar transporte primeiro", text: "O fluxo trata indisponibilidade e limites de chamada antes de interpretar o retorno como resposta de negócio." },
+      { title: "Conferir o par HTTP e estado", text: "Neste contrato didático, entrar na fila exige HTTP 202. Aceitar ou rejeitar a solicitação exige HTTP 200 com o estado correspondente." },
+      { title: "Aceitar campos adicionais", text: "O esquema valida o que orienta a decisão. Campos adicionais no JSON podem evoluir sem alterar o resultado." },
+    ],
+    quality: "Os exemplos e o contrato são fictícios. A validação acontece no navegador e o editor limita o tamanho a 4.096 caracteres.",
+    tests: "Os testes cobrem mudança de tipo, JSON inválido, incoerência entre HTTP e estado e indisponibilidade. Playwright executa a revisão e a espera pela interface.",
+    limits: "O laboratório analisa uma resposta por vez, com um contrato didático próprio. O código de status é fornecido pelo visitante.",
+    next: "Comparar duas versões de contrato lado a lado para localizar mudanças que quebram uma integração.",
+    snippet: 'const expectedHttp = response.estado === "em_fila" ? 202 : 200;\nif (http !== expectedHttp) {\n  // A combinação exige revisão.\n}',
+    snippetLabel: "lib/return-radar.ts · coerência do contrato",
+  },
   ...existing,
 ];

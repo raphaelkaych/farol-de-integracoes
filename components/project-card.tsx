@@ -66,6 +66,16 @@ export function ProjectPreview({ slug }: { slug: string }) {
       </div>
     );
   }
+  if (slug === "radar-de-retorno") {
+    return (
+      <div className="project-preview" aria-hidden="true">
+        <div className="preview-head"><span><i /> RADAR DE RETORNO</span><span>CONTRATO</span></div>
+        <div className="preview-ledger-row"><code>200</code><b>Protocolo em texto</b><span>Avançar</span></div>
+        <div className="preview-ledger-row"><code>200</code><b>Protocolo numérico</b><span>Revisar</span></div>
+        <div className="preview-ledger-row"><code>202</code><b>Em processamento</b><span>Aguardar</span></div>
+      </div>
+    );
+  }
   return (
     <div className="project-preview preview-compact" aria-hidden="true">
       <div className="preview-head"><span><i /> FILA DO PLANTÃO</span><span>SLA</span></div>

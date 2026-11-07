@@ -42,7 +42,7 @@
     <rect x="430" y="101" width="132" height="101" rx="12"/>
     <rect x="234" y="256" width="132" height="82" rx="12"/>
   </g>
-  <rect x="233" y="97" width="134" height="110" rx="13" fill="#152E52" stroke="#75A9FF" stroke-width="1.5"/>
+  <rect x="233" y="97" width="134" height="110" rx="13" fill="url(#surface)" stroke="#253955" stroke-width="1.5"/>
   <g fill="#080F20" stroke="#75A9FF" stroke-width="1.5">
     <circle cx="170" cy="151" r="4"/><circle cx="233" cy="151" r="4"/>
     <circle cx="367" cy="151" r="4"/><circle cx="430" cy="151" r="4"/>

@@ -125,6 +125,25 @@ test("TraceAtlas correlaciona a falha e a recuperação com a sonda real separad
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
+test("Radar de Retorno detecta contrato quebrado mesmo com HTTP 200", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/radar-de-retorno");
+  const examples = page.getByRole("combobox", { name: "Exemplo", exact: true });
+  const validate = page.getByRole("button", { name: "Validar retorno" });
+  const result = page.getByRole("status");
+  await examples.selectOption("formato");
+  await validate.click();
+  await expect(result).toContainText("Revisar");
+  await expect(result).toContainText("protocolo");
+  await examples.selectOption("fila");
+  await validate.click();
+  await expect(result).toContainText("Aguardar");
+  await page.getByRole("spinbutton", { name: "Código HTTP" }).fill("200");
+  await validate.click();
+  await expect(result).toContainText("deve chegar com HTTP 202");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
+
 test("Farol continua recuperando um pedido da quarentena", async ({ page }) => {
   await page.goto("/farol");
   await page.getByRole("button", { name: /ERP fora do ar/ }).click();

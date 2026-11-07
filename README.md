@@ -10,6 +10,7 @@ Aplicação que reúne estudos de caso e laboratórios de desenvolvimento, quali
 | LedgerFlow | [Conciliação e auditoria](docs/ledgerflow.md) | [Importar um extrato fictício](https://raphael-kaych.raphaelvindex.chatgpt.site/ledgerflow) |
 | Farol de Integrações | [Retentativas e recuperação](docs/farol.md) | [Recuperar um pedido](https://raphael-kaych.raphaelvindex.chatgpt.site/farol) |
 | TraceAtlas | [Rastros, correlação e latência](docs/traceatlas.md) | [Investigar uma falha](https://raphael-kaych.raphaelvindex.chatgpt.site/traceatlas) |
+| Radar de Retorno | [Validação de respostas de integração](lib/return-radar.ts) | [Validar uma resposta](https://raphael-kaych.raphaelvindex.chatgpt.site/radar-de-retorno) |
 
 ## Instalação local
 

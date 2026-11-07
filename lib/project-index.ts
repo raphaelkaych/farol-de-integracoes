@@ -58,6 +58,12 @@ export const projects: readonly Project[] = [
     stack: ["Python", "SQLite"], categories: ["arquitetura"],
     demo: "/demos/plantao-ti", code: github + "/plantao-ti",
   },
+  {
+    slug: "radar-de-retorno", index: "08", name: "Radar de Retorno", label: "CONTRATOS DE API",
+    summary: "Edite uma resposta fictícia e veja quando o código HTTP e o conteúdo levam a decisões diferentes.",
+    stack: ["TypeScript", "React", "Zod"], categories: ["backend", "arquitetura"],
+    demo: "/radar-de-retorno", code: siteRepository + "/blob/main/lib/return-radar.ts",
+  },
 ];
 
 export function findProject(slug: string) {

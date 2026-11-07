@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { scenarios, type Scenario, type Span, type Trace, type TraceRun } from "../lib/traceatlas/model";
+import { useBrowserReady } from "./use-browser-ready";
 
 const hasError = (trace: Trace) => trace.spans.some((span) => span.status === "erro");
-const subscribe = () => () => {};
-const clientReady = () => true;
-const serverReady = () => false;
 
 function Timeline({ trace }: { trace: Trace }) {
   const [selected, setSelected] = useState<Span | null>(null);
@@ -47,7 +45,7 @@ function Timeline({ trace }: { trace: Trace }) {
 }
 
 export function TraceAtlas() {
-  const ready = useSyncExternalStore(subscribe, clientReady, serverReady);
+  const ready = useBrowserReady();
   const [scenario, setScenario] = useState<Scenario>("db-lento");
   const [run, setRun] = useState<TraceRun>();
   const [traceId, setTraceId] = useState("");
