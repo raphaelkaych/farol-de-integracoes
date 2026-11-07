@@ -89,6 +89,28 @@
 .career-company { color: var(--ink); font-weight: 570; font-size: .92rem; }
 .career-education { border-top: 1px solid var(--line); padding-top: 1.1rem; }
 .career-education article { padding: 1rem 0; border-bottom: 1px solid var(--line); }
+.vindex-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .94fr);
+  align-items: center;
+  gap: clamp(.8rem, 3vw, 2.5rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  margin-top: clamp(1.8rem, 4vw, 3.2rem);
+  border: 1px solid #3b5e8c;
+  border-radius: var(--radius);
+  background: radial-gradient(ellipse at 92% 32%, #18386099, transparent 70%), #0b172c;
+}
+.vindex-copy h2, .vindex-copy h3 { margin-top: .3rem; font-size: clamp(1.75rem, 3.55vw, 2.8rem); letter-spacing: -.055em; line-height: 1.1; }
+.vindex-copy > p:not(.eyebrow) { color: var(--muted); margin-top: .55rem; max-width: 59ch; font-size: .95rem; }
+.vindex-demo { display: inline-block; margin-top: .65rem; font-size: .88rem; }
+.vindex-art { min-width: 0; }
+.vindex-art img { display: block; width: 100%; height: auto; }
+.vindex-art figcaption { color: var(--quiet); text-align: center; font: .66rem/1.45 var(--mono); }
+.resume-details { margin-top: 1.75rem; }
+.resume-details dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; margin: .7rem 0 0; }
+.resume-details dl > div { border-top: 1px solid var(--line); padding: .65rem .55rem .65rem 0; }
+.resume-details dt { font-weight: 650; }
+.resume-details dd { color: var(--muted); font-size: .88rem; margin: .2rem 0 0; }
 .milestone-label { margin-block: 2.5rem .75rem; }
 .milestones { display: grid; grid-template-columns: 1.2fr .8fr; gap: .7rem; }
 .milestone h3 { margin-top: .22rem; font-size: 1.28rem; }
@@ -155,16 +177,25 @@
   .case-hero, .case-layout { grid-template-columns: minmax(0, 1fr); gap: .2rem; }
   .case-sidebar nav { position: static; display: flex; gap: .5rem .8rem; align-items: center; flex-wrap: wrap; }
   .case-hero .project-preview { margin-block: .2rem; }
+  .vindex-feature { grid-template-columns: minmax(0, 1fr); }
+  .vindex-art { width: min(100%, 30rem); }
 }
 @media (max-width: 555px) {
   .feature-grid, .notes-grid, .career-grid, .milestones, .catalog-grid { grid-template-columns: minmax(0, 1fr); }
   main > .section { content-visibility: auto; contain-intrinsic-size: auto 32rem; }
+  .resume-details dl { grid-template-columns: minmax(0, 1fr); gap: .25rem; }
 }
 @media print {
   :root { color-scheme: light; --ink: #111; --muted: #333; --accent: #123866; --line: #aaa; }
   body { color: var(--ink); background: white; }
-  .site-header, .site-footer, .career-page .back-link, .print-button, .skip-link { display: none; }
+  .site-header, .site-footer, .career-page .back-link, .print-button, .skip-link, .vindex-art, .vindex-demo { display: none; }
   .career-page { padding: 0; }
-  .milestone, .casa-flow span { color: var(--ink); background: transparent; }
-  .career-timeline li, .milestone, .career-education { break-inside: avoid; }
+  .milestone, .casa-flow span, .vindex-feature { color: var(--ink); background: transparent; }
+  .vindex-feature { display: block; padding: .75rem; margin-top: 1rem; }
+  .career-page .page-intro { margin: 0 0 .95rem; }
+  .career-page .page-intro h1 { font-size: 2.15rem; }
+  .career-page .career-timeline li { padding-bottom: .68rem; }
+  .career-page .milestone-label, .resume-details { margin-top: 1rem; }
+  .career-page .resume-details dl { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .career-timeline li, .milestone, .career-education, .vindex-feature, .resume-details { break-inside: avoid; }
 }

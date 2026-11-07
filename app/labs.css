@@ -102,8 +102,21 @@ input::placeholder { color: var(--quiet); }
 .trace-probe { margin-top: .85rem; }
 .trace-probe h2 { margin-top: .25rem; }
 .trace-probe > p:nth-last-child(2) { margin-top: .65rem; }
+.return-layout { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr); gap: .75rem; align-items: start; }
+.return-editor { display: grid; gap: .72rem; }
+.return-editor .demo-form { margin-top: 0; }
+.return-editor input { width: 6.5rem; }
+.return-editor > label { display: grid; gap: .28rem; font-size: .88rem; font-weight: 600; }
+.return-editor textarea { width: 100%; min-height: 10rem; resize: vertical; padding: .72rem; background: var(--background); color: var(--ink); border: 1px solid var(--line); border-radius: 7px; font: .86rem/1.55 var(--mono); }
+.return-editor .button { justify-self: start; }
+.return-finding { min-height: 6.5rem; margin-top: .5rem; overflow-wrap: anywhere; }
+.return-finding p { margin-top: .42rem; }
+.return-finding code { margin-inline-start: .35rem; color: var(--accent); }
+.return-contract { border-top: 1px solid var(--line); padding-top: .65rem; }
+.return-contract summary { color: var(--accent); cursor: pointer; }
+.return-contract ul { margin-bottom: 0; padding-inline-start: 1.25rem; color: var(--muted); font-size: .86rem; }
 @media (max-width: 680px) {
-  .trace-layout { grid-template-columns: minmax(0, 1fr); }
+  .trace-layout, .return-layout { grid-template-columns: minmax(0, 1fr); }
   .trace-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 365px) {

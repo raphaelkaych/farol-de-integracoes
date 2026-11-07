@@ -6,7 +6,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "test": "node --test tests/farol.test.ts tests/qualitygate.test.ts tests/ledgerflow.test.ts tests/traceatlas.test.ts",
+    "test": "node --test tests/farol.test.ts tests/qualitygate.test.ts tests/ledgerflow.test.ts tests/traceatlas.test.ts tests/return-radar.test.ts",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "install:ci": "node scripts/install-ci.mjs",

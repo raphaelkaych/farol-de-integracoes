@@ -4,6 +4,7 @@ import { github, siteUrl } from "../lib/portfolio-meta";
 import "./globals.css";
 import "./portfolio.css";
 import "./labs.css";
+import "./motion.css";
 
 const description = "Portfólio de Raphael Kaych. Projetos de desenvolvimento full stack, APIs, testes e integração de sistemas, com demos e código público.";
 

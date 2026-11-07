@@ -19,7 +19,7 @@ test("home, seções e navegação abrem sem erros críticos", async ({ page }) 
 
 test("filtro e estudo de caso mantêm URL e rotas funcionais", async ({ page }) => {
   await page.goto("/projetos");
-  await expect(page.getByRole("heading", { name: "7 projetos" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "8 projetos" })).toBeVisible();
   await page.getByRole("link", { name: "QA & Automation" }).click();
   await expect(page).toHaveURL(/categoria=qualidade/);
   await expect(page.getByRole("heading", { name: "1 projeto", exact: true })).toBeVisible();
@@ -69,6 +69,46 @@ test("layout em 360, 768 e 1440 px e navegação mobile", async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
+test("rede da home acompanha o mouse e respeita movimento reduzido", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const signals = page.locator(".hero-signals");
+  await expect(signals).toHaveAttribute("data-tracking", "");
+  const point = await signals.locator(".signal-nodes circle").nth(5).evaluate((node: SVGCircleElement) => {
+    const { x, y } = new DOMPoint(node.cx.baseVal.value, node.cy.baseVal.value).matrixTransform(node.getScreenCTM()!);
+    return { x, y };
+  });
+  await page.mouse.move(point.x + 22, point.y + 20);
+  await expect(signals).toHaveAttribute("data-following", "");
+  await expect(signals).toHaveAttribute("data-linked", "");
+  const tether = signals.locator(".signal-link line");
+  const start = await tether.getAttribute("x1");
+  await page.mouse.move(point.x + 53, point.y + 20);
+  await expect.poll(() => tether.getAttribute("x1")).not.toBe(start);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(signals).not.toHaveAttribute("data-tracking");
+  await page.mouse.move(point.x + 28, point.y + 27);
+  await expect(signals).not.toHaveAttribute("data-following");
+  await expect(signals.locator(".signal-link")).toHaveCSS("opacity", "0");
+});
+
+test("busca abre Vindex Fiscal no currículo e a impressão preserva o relato", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Abrir busca rápida" }).click();
+  const dialog = page.getByRole("dialog", { name: "Busca rápida" });
+  await dialog.getByRole("searchbox").fill("SEFAZ");
+  await dialog.getByRole("link", { name: "Vindex Fiscal" }).click();
+  await expect(page).toHaveURL(/\/trajetoria#vindex-fiscal$/);
+  const vindex = page.getByRole("region", { name: "Vindex Fiscal" });
+  await expect(vindex).toContainText("desenvolvimento em equipe");
+  await expect(vindex.getByRole("link", { name: "Testar um retorno fictício" })).toHaveAttribute("href", "/radar-de-retorno");
+  await expect(page.getByRole("button", { name: "Imprimir ou salvar em PDF" })).toBeEnabled();
+  await page.emulateMedia({ media: "print" });
+  await expect(page.getByRole("button", { name: "Imprimir ou salvar em PDF" })).toBeHidden();
+  await expect(vindex.getByRole("heading", { name: "Vindex Fiscal" })).toBeVisible();
+  await expect(page.getByText(/inglês intermediário/i)).toBeVisible();
+});
+
 test("título é legível e controles do TraceAtlas ficam desabilitados sem JavaScript", async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: "reduce" });
   try {
@@ -97,24 +137,24 @@ test("a digitação revela todas as letras e o atalho pula para o conteúdo", as
 });
 
 test("metadados, recursos e rotas legadas respondem", async ({ request }) => {
-  const pages = ["/", "/projetos", "/trajetoria", "/qualitygate", "/ledgerflow", "/farol", "/traceatlas",
+  const pages = ["/", "/projetos", "/trajetoria", "/qualitygate", "/ledgerflow", "/farol", "/traceatlas", "/radar-de-retorno",
     "/demos/plantao-ti", "/demos/ponte-erp", "/demos/pulso-operacao",
-    "/projetos/qualitygate-studio", "/projetos/ledgerflow", "/projetos/traceatlas",
+    "/projetos/qualitygate-studio", "/projetos/ledgerflow", "/projetos/traceatlas", "/projetos/radar-de-retorno",
     "/projetos/farol-de-integracoes", "/projetos/plantao-ti", "/projetos/ponte-erp", "/projetos/pulso-operacao"];
   for (const path of pages) {
     const response = await request.get(path);
     expect(response.status(), path).toBe(200);
     expect(await response.text()).toContain('rel="canonical"');
   }
-  for (const path of ["/robots.txt", "/sitemap.xml", "/compartilhamento.png", "/hero-diagrama.svg", "/api-contract.json", "/evidencias/qualitygate-permissao.png"]) {
+  for (const path of ["/robots.txt", "/sitemap.xml", "/compartilhamento.png", "/hero-diagrama.svg", "/vindex-fluxo.svg", "/api-contract.json", "/evidencias/qualitygate-permissao.png"]) {
     expect((await request.get(path)).status(), path).toBe(200);
   }
   expect((await request.get("/projetos/projeto-inexistente")).status()).toBe(404);
 });
 
-test("axe nas páginas inicial, de caso e nos laboratórios QualityGate e TraceAtlas", async ({ page }) => {
+test("axe nas páginas principais e nos laboratórios", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const path of ["/", "/projetos/qualitygate-studio", "/qualitygate", "/traceatlas"]) {
+  for (const path of ["/", "/projetos/qualitygate-studio", "/qualitygate", "/traceatlas", "/trajetoria", "/radar-de-retorno"]) {
     await page.goto(path);
     if (path === "/traceatlas") {
       await page.getByRole("combobox", { name: "Cenário", exact: true }).selectOption("recuperacao");

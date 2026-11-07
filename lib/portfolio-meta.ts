@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const siteUrl = "https://raphael-kaych.raphaelvindex.chatgpt.site";
 export const github = "https://github.com/raphaelkaych";
 export const siteRepository = github + "/farol-de-integracoes";
+export const vindexPath = "/trajetoria#vindex-fiscal";
 
 export function pageMetadata(title: string, description: string, path: string): Metadata {
   return {

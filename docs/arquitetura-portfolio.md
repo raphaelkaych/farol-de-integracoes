@@ -9,6 +9,7 @@ O portfólio é servido por um Worker no Sites. A interface usa React com App Ro
 | QualityGate Studio | `app/qualitygate`, `app/api/qualitygate`, `lib/qualitygate` |
 | LedgerFlow | `app/ledgerflow`, `app/api/ledgerflow`, `lib/ledgerflow`, migração `0001` |
 | TraceAtlas | `app/traceatlas`, `app/api/traceatlas`, `lib/traceatlas` |
+| Radar de Retorno | `app/radar-de-retorno`, `lib/return-radar.ts`, validação no navegador |
 | Farol e demos anteriores | `app/farol`, `app/demos/[slug]`, `lib/farol` |
 | Qualidade | `tests/`, `e2e/`, `.github/workflows/validar.yml` |
 

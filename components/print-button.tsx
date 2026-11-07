@@ -1,5 +1,8 @@
 "use client";
 
+import { useBrowserReady } from "./use-browser-ready";
+
 export function PrintButton() {
-  return <button type="button" className="button button-primary print-button" onClick={() => window.print()}>Imprimir resumo</button>;
+  const ready = useBrowserReady();
+  return <button type="button" className="button button-primary print-button" disabled={!ready} onClick={() => window.print()}>Imprimir ou salvar em PDF</button>;
 }

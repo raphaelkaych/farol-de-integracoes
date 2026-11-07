@@ -1,6 +1,6 @@
 import { ProjectCard } from "../../components/project-card";
 import { categories, projects, type Category } from "../../lib/project-index";
-import { pageMetadata } from "../../lib/portfolio-meta";
+import { pageMetadata, vindexPath } from "../../lib/portfolio-meta";
 
 export const metadata = pageMetadata("Projetos", "Estudos de caso e demonstrações de desenvolvimento, QA, APIs, arquitetura e dados.", "/projetos");
 
@@ -14,6 +14,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
       <header className="page-intro">
         <p className="eyebrow"><span /> ÍNDICE / LABORATÓRIOS</p><h1>Projetos</h1>
         <p>Explore o problema, as decisões técnicas, o código e a demonstração de cada projeto.</p>
+        <a className="text-link" href={vindexPath}>Conhecer o Vindex Fiscal <span aria-hidden="true">↗</span></a>
       </header>
       <nav className="project-filters" aria-label="Filtrar projetos">
         {(Object.entries(categories) as [Category, string][]).map(([key, label]) => (
