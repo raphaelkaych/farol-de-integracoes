@@ -47,7 +47,6 @@
   html { scroll-behavior: smooth; }
   [data-entered]:not(:focus-within) { animation: enter-section .52s var(--ease) both; }
   .workbench-detail { animation: enter-section .28s var(--ease) both; }
-  .workbench-signal path { animation: signal-travel .85s var(--ease); stroke-dasharray: .24 1; }
   .workbench-tabs button { transition: background .22s var(--ease), box-shadow .22s var(--ease), color .22s; }
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
@@ -57,10 +56,10 @@
   .signal-pulses { opacity: 1; stroke-width: 1.8; }
   .signal-pulses polyline { opacity: 0; stroke-dasharray: .09 1; animation: signal-travel 2.8s ease-in-out .22s both; }
   .signal-pulses polyline:nth-child(even) { animation-delay: .72s; }
+  .workbench-signal path { animation: signal-travel .85s var(--ease); stroke-dasharray: .24 1; }
 }
 @media (max-width: 785px) {
-  .signal-wires { opacity: .12; }
-  .signal-nodes { opacity: .3; }
+  .hero-signals { display: none; }
 }
 
 @keyframes enter-section {

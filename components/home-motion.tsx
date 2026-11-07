@@ -30,7 +30,7 @@ export function HomeMotion() {
     const hero = field?.parentElement;
     if (!field || !svg || !line || !dot || !hero) return;
 
-    const input = window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
+    const input = window.matchMedia("(min-width: 786px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
     let frame = 0;
     let mouseX = 0;
     let mouseY = 0;

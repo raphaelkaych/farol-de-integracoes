@@ -90,6 +90,10 @@ test("rede da home acompanha o mouse e respeita movimento reduzido", async ({ pa
   await page.mouse.move(point.x + 28, point.y + 27);
   await expect(signals).not.toHaveAttribute("data-following");
   await expect(signals.locator(".signal-link")).toHaveCSS("opacity", "0");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(signals).toBeHidden();
+  await expect(signals).not.toHaveAttribute("data-tracking");
 });
 
 test("busca abre Vindex Fiscal no currículo e a impressão preserva o relato", async ({ page }) => {
