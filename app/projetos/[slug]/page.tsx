@@ -26,7 +26,7 @@ export default async function CasePage({ params }: Props) {
   const project = findProject(slug);
   const detail = cases.find((item) => item.slug === slug);
   if (!project || !detail) notFound();
-  const inWorkspace = project.demo === "/qualitygate" || project.demo === "/ledgerflow" || project.demo === "/farol";
+  const inWorkspace = project.code.startsWith(siteRepository);
 
   return (
     <main id="conteudo" tabIndex={-1} className="shell inner-page">

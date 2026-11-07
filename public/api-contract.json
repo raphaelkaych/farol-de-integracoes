@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Laboratórios de engenharia de Raphael Kaych",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Contrato HTTP dos laboratórios de demonstração com dados fictícios."
   },
   "servers": [
@@ -746,6 +746,99 @@
           }
         }
       }
+    },
+    "/api/traceatlas": {
+      "post": {
+        "summary": "Gerar rastros simulados e medir a sonda do banco",
+        "description": "O lote usa tempos determinísticos. A sonda mede uma consulta real ao D1. O corpo aceita até 1 KiB.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scenario": {
+                    "type": "string",
+                    "enum": [
+                      "normal",
+                      "db-lento",
+                      "db-fora",
+                      "worker",
+                      "erp",
+                      "recuperacao"
+                    ]
+                  }
+                },
+                "required": [
+                  "scenario"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lote de rastros e resultado da sonda",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Identificador de correlação do lote",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceAtlasRun"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Tamanho máximo excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Use application/json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados fora do contrato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1173,6 +1266,215 @@
           "version",
           "events",
           "audit"
+        ]
+      },
+      "TraceAtlasRun": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "db-lento",
+              "db-fora",
+              "worker",
+              "erp",
+              "recuperacao"
+            ]
+          },
+          "traces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraceAtlasTrace"
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "p95": {
+                "type": "number",
+                "minimum": 0
+              },
+              "failures": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "recovered": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "count",
+              "p95",
+              "failures",
+              "recovered"
+            ]
+          },
+          "probe": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "disponivel",
+                  "indisponivel"
+                ]
+              },
+              "durationMs": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "status",
+              "durationMs"
+            ]
+          }
+        },
+        "required": [
+          "runId",
+          "scenario",
+          "traces",
+          "metrics",
+          "probe"
+        ]
+      },
+      "TraceAtlasTrace": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "durationMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "erro"
+            ]
+          },
+          "recovered": {
+            "type": "boolean"
+          },
+          "spans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraceAtlasSpan"
+            }
+          },
+          "logs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "traceId": {
+                  "type": "string"
+                },
+                "spanId": {
+                  "type": "string"
+                },
+                "atMs": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "level": {
+                  "type": "string",
+                  "enum": [
+                    "INFO",
+                    "WARN",
+                    "ERROR"
+                  ]
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "traceId",
+                "spanId",
+                "atMs",
+                "level",
+                "text"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "durationMs",
+          "status",
+          "recovered",
+          "spans",
+          "logs"
+        ]
+      },
+      "TraceAtlasSpan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "service": {
+            "type": "string",
+            "enum": [
+              "Gateway",
+              "API",
+              "Banco",
+              "Worker",
+              "ERP"
+            ]
+          },
+          "operation": {
+            "type": "string"
+          },
+          "startMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "durationMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "erro"
+            ]
+          },
+          "code": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599
+          }
+        },
+        "required": [
+          "id",
+          "parent",
+          "service",
+          "operation",
+          "startMs",
+          "durationMs",
+          "status",
+          "code"
         ]
       }
     }

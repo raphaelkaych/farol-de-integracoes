@@ -51,5 +51,27 @@ export const cases: readonly Case[] = [
     snippet: 'WHERE id = ? AND secret_hash = ? AND expires_at > ? AND role = \'analista\' AND revision = ?',
     snippetLabel: "lib/ledgerflow/store.ts · condição da escrita",
   },
+  {
+    slug: "traceatlas",
+    context: "Um pedido pode ficar lento, falhar antes de chegar ao ERP ou terminar com sucesso depois de uma retentativa. Só observar o status final esconde parte do caminho.",
+    goal: "Investigar a origem de uma falha em nove pedidos fictícios por lote, relacionando duração, código, parentesco e logs de cada operação.",
+    architecture: [
+      { title: "Contrato HTTP", text: "A rota recebe um cenário validado e gera um ID de correlação que volta no corpo e no cabeçalho X-Request-Id." },
+      { title: "Modelo de rastros", text: "O simulador compõe spans encadeados de gateway, API, banco, worker e ERP. Cada log aponta para o rastro e para a etapa que o originou." },
+      { title: "Painel de investigação", text: "A interface calcula a posição de cada barra pelo início e pela duração. O filtro considera falhas intermediárias, inclusive em pedidos recuperados." },
+      { title: "Sonda do banco", text: "A API mede separadamente uma consulta real de prontidão no D1 e apresenta o resultado no mesmo painel." },
+    ],
+    decisions: [
+      { title: "Relógios separados", text: "A simulação usa um relógio determinístico para reproduzir a falha. A sonda mede o tempo real da consulta com performance.now()." },
+      { title: "Falha intermediária e falha final", text: "O ERP pode responder 503 e depois 200 para o mesmo pedido. O lote registra a recuperação e mantém a primeira falha no rastro." },
+      { title: "P95 por posição", text: "As durações ordenadas produzem o P95 pelo método de posto mais próximo. Com nove pedidos, o indicador corresponde à maior duração do lote." },
+    ],
+    quality: "O corpo da solicitação tem limite de 1 KiB. Os cenários são fixos, e a única consulta real é uma leitura de prontidão. Os rastros fictícios são gerados por execução.",
+    tests: "Testes de domínio conferem a árvore, os limites de tempo e a correlação dos logs. Playwright executa a API e investiga a falha e a recuperação na interface.",
+    limits: "O painel representa um fluxo distribuído em uma simulação de serviço único. A sonda mede somente a consulta ao D1 do site. Os dados de cada lote ficam na resposta e no navegador durante a visita.",
+    next: "Instrumentar serviços independentes com OpenTelemetry e exportar spans para um coletor em um ambiente de laboratório.",
+    snippet: "const durations = traces.map((trace) => trace.durationMs).sort((a, b) => a - b);\nconst p95 = durations[Math.ceil(durations.length * .95) - 1];",
+    snippetLabel: "lib/traceatlas/model.ts · cálculo do P95",
+  },
   ...existing,
 ];

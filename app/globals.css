@@ -130,7 +130,7 @@ code, kbd { font-family: var(--mono); }
 @media (prefers-reduced-motion: no-preference) {
   .type-text { animation: type-reveal .37s steps(var(--steps), end) var(--delay) backwards; }
   .type-line::after { content: ""; position: absolute; top: .13em; height: .81em; left: 0; width: 2px; background: var(--accent); opacity: 0; animation: type-cursor .37s steps(var(--steps), end) var(--delay); }
-  .hero-kicker, .workbench { animation: settle-in .55s var(--ease) both; }
+  .hero-kicker { animation: settle-in .55s var(--ease) both; }
   .hero-lead, .hero-note, .hero-actions { animation: settle-in .55s var(--ease) .42s both; }
   @keyframes type-reveal { from { clip-path: inset(-.2em 100% -.2em 0); } to { clip-path: inset(-.2em -.1em -.2em 0); } }
   @keyframes type-cursor { from { opacity: 1; left: 0; } to { opacity: 1; left: 100%; } }

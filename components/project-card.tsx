@@ -1,4 +1,5 @@
 import { casePath, type Project } from "../lib/project-index";
+import { analyze } from "../lib/traceatlas/model";
 
 export function ProjectPreview({ slug }: { slug: string }) {
   if (slug === "qualitygate-studio") {
@@ -41,6 +42,19 @@ export function ProjectPreview({ slug }: { slug: string }) {
       <div className="project-preview preview-compact" aria-hidden="true">
         <div className="preview-head"><span><i /> POST /WEBHOOK</span><span>HMAC</span></div>
         <div className="preview-command"><code>201</code><b>Criado</b><code>200</code><b>Reenvio</b><code>409</code><b>Conflito</b></div>
+      </div>
+    );
+  }
+  if (slug === "traceatlas") {
+    const trace = analyze("db-lento", "exemplo").traces[1];
+    return (
+      <div className="project-preview" aria-hidden="true">
+        <div className="preview-head"><span><i /> TRACEATLAS</span><span>BANCO LENTO / SIMULAÇÃO</span></div>
+        <div className="preview-spans">
+          {trace.spans.filter(({ service }) => service === "API" || service === "Banco" || service === "ERP").map((item) => (
+            <div key={item.id}><span>{item.service}</span><span><i style={{ left: item.startMs / trace.durationMs * 100 + "%", width: item.durationMs / trace.durationMs * 100 + "%" }} /></span><code>{item.durationMs} ms</code></div>
+          ))}
+        </div>
       </div>
     );
   }

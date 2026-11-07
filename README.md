@@ -2,13 +2,14 @@
 
 [Portfólio público](https://raphael-kaych.raphaelvindex.chatgpt.site/) · [Vitrine de projetos](https://raphael-kaych.raphaelvindex.chatgpt.site/projetos) · [Execuções de CI](https://github.com/raphaelkaych/farol-de-integracoes/actions/workflows/validar.yml)
 
-Aplicação que reúne estudos de caso e laboratórios de desenvolvimento, qualidade e integração de sistemas. O repositório começou como Farol de Integrações e hoje também contém a vitrine e dois módulos de demonstração.
+Aplicação que reúne estudos de caso e laboratórios de desenvolvimento, qualidade e integração de sistemas. O repositório começou como Farol de Integrações e hoje também contém a vitrine e os demais laboratórios abaixo.
 
 | Laboratório | Código e documentação | Demo |
 | --- | --- | --- |
 | QualityGate Studio | [Comparação de referência e defeito](docs/qualitygate-studio.md) | [Executar cenários](https://raphael-kaych.raphaelvindex.chatgpt.site/qualitygate) |
 | LedgerFlow | [Conciliação e auditoria](docs/ledgerflow.md) | [Importar um extrato fictício](https://raphael-kaych.raphaelvindex.chatgpt.site/ledgerflow) |
 | Farol de Integrações | [Retentativas e recuperação](docs/farol.md) | [Recuperar um pedido](https://raphael-kaych.raphaelvindex.chatgpt.site/farol) |
+| TraceAtlas | [Rastros, correlação e latência](docs/traceatlas.md) | [Investigar uma falha](https://raphael-kaych.raphaelvindex.chatgpt.site/traceatlas) |
 
 ## Instalação local
 

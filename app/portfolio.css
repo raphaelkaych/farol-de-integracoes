@@ -15,7 +15,7 @@
 .project-feature h3 { font-size: clamp(1.45rem, 2.9vw, 2.05rem); }
 .project-card h3 a { text-decoration: none; }
 .project-card h3 a:hover { text-decoration: underline; text-underline-offset: .18em; }
-.project-card p, .showcase-note p:not(.eyebrow) { color: var(--muted); font-size: .91rem; }
+.project-card p { color: var(--muted); font-size: .91rem; }
 .tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .85rem; }
 .tags span { padding: .17rem .48rem; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); background: #0b172b; font: 520 .66rem/1.45 var(--mono); }
 .project-card .project-preview { margin: auto clamp(.75rem, 1.8vw, 1.2rem) .65rem; }
@@ -59,8 +59,11 @@
 .preview-pulso { display: flex; align-items: center; gap: .7rem; padding: .55rem .65rem; font-size: .72rem; }
 .preview-pulso b { color: var(--accent); font: 700 1.3rem var(--mono); }
 .preview-pulso i { height: .26rem; flex: 1; background: linear-gradient(90deg, var(--accent) 75%, #253955 75%); border-radius: 2px; }
-.showcase-note { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: .65rem; padding: clamp(1rem, 3vw, 2.4rem); border: 1px dashed #35537e; border-radius: var(--radius); background: radial-gradient(ellipse at 12% 22%, #102444c9, transparent 75%); }
-.showcase-note h3 { font-size: clamp(1.25rem, 2.4vw, 1.8rem); letter-spacing: -.04em; }
+.preview-spans { display: grid; gap: .4rem; padding: .62rem .68rem; }
+.preview-spans > div { display: grid; grid-template-columns: 3.2rem 1fr 3.8rem; align-items: center; gap: .4rem; color: var(--muted); font-size: .72rem; }
+.preview-spans > div > span:nth-child(2) { position: relative; height: 7px; background: var(--line); border-radius: 3px; }
+.preview-spans i { position: absolute; inset-block: 0; background: var(--accent); border-radius: 3px; }
+.preview-spans code { text-align: right; }
 
 .skill-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; }
 .skill-card, .notes-grid article, .milestone { border: 1px solid var(--line); border-radius: 11px; padding: clamp(.9rem, 1.8vw, 1.2rem); background: #0a1325; }
@@ -73,7 +76,7 @@
 .quality-band { margin-top: 1.2rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between; border: 1px solid #40659c; border-radius: var(--radius); background: linear-gradient(100deg, #102444, #080f20); padding: clamp(1rem, 2.6vw, 2rem); }
 .quality-band h3 { margin: .23rem 0; font-size: clamp(1.2rem, 2.7vw, 1.75rem); letter-spacing: -.04em; }
 .quality-band p:not(.eyebrow) { color: var(--muted); max-width: 65ch; font-size: .92rem; }
-.notes-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; margin-top: 1.4rem; }
+.notes-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin-top: 1.4rem; }
 .notes-grid h3 { margin-block: .35rem; font-size: 1.07rem; line-height: 1.3; }
 .notes-grid h3 a { text-underline-offset: .24em; }
 .career-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: clamp(1.2rem, 4.8vw, 4rem); }
@@ -148,7 +151,7 @@
   .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 785px) {
-  .skill-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .skill-grid, .notes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .case-hero, .case-layout { grid-template-columns: minmax(0, 1fr); gap: .2rem; }
   .case-sidebar nav { position: static; display: flex; gap: .5rem .8rem; align-items: center; flex-wrap: wrap; }
   .case-hero .project-preview { margin-block: .2rem; }
