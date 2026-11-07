@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { scenarios, type Scenario, type Span, type Trace, type TraceRun } from "../lib/traceatlas/model";
 
 const hasError = (trace: Trace) => trace.spans.some((span) => span.status === "erro");
+const subscribe = () => () => {};
+const clientReady = () => true;
+const serverReady = () => false;
 
 function Timeline({ trace }: { trace: Trace }) {
   const [selected, setSelected] = useState<Span | null>(null);
@@ -44,6 +47,7 @@ function Timeline({ trace }: { trace: Trace }) {
 }
 
 export function TraceAtlas() {
+  const ready = useSyncExternalStore(subscribe, clientReady, serverReady);
   const [scenario, setScenario] = useState<Scenario>("db-lento");
   const [run, setRun] = useState<TraceRun>();
   const [traceId, setTraceId] = useState("");
@@ -79,13 +83,14 @@ export function TraceAtlas() {
         <div className="demo-form">
           <div className="trace-scenario-field">
             <label htmlFor="trace-scenario">Cenário</label>
-            <select id="trace-scenario" value={scenario} onChange={(event) => setScenario(event.target.value as Scenario)} disabled={pending}>
+            <select id="trace-scenario" value={scenario} onChange={(event) => setScenario(event.target.value as Scenario)} disabled={!ready || pending}>
               {(Object.keys(scenarios) as Scenario[]).map((key) => <option value={key} key={key}>{scenarios[key].title}</option>)}
             </select>
           </div>
-          <button className="button button-primary" disabled={pending} onClick={execute}>Executar cenário</button>
+          <button className="button button-primary" disabled={!ready || pending} onClick={execute}>Executar cenário</button>
         </div>
         <p className="lab-meta">{scenarios[scenario].detail}</p>
+        <noscript><p className="lab-meta">Ative o JavaScript para executar os cenários do laboratório.</p></noscript>
         <p className="lab-feedback" role="status">{pending ? "Coletando o lote…" : error || (run ? "Rastros disponíveis para investigação." : "")}</p>
       </section>
       {run && (
