@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Comparison } from "../lib/qualitygate/engine";
+import type { TraceRun } from "../lib/traceatlas/model";
 import { header, sampleCsv } from "../lib/ledgerflow/model";
 
 test.use({ trace: "on" });
@@ -90,6 +91,38 @@ test("LedgerFlow cria, edita e remove um lançamento manual pelo diálogo", asyn
   await edit.getByRole("button", { name: "Confirmar remoção", exact: true }).click();
   await expect(row).toHaveCount(0);
   await expect(page.getByRole("listitem").filter({ hasText: "M-001 removido" })).toBeVisible();
+});
+
+test("TraceAtlas correlaciona a falha e a recuperação com a sonda real separada", async ({ page, request }) => {
+  const raw = await request.post("/api/traceatlas", { data: { scenario: "db-fora" } });
+  expect(raw.status()).toBe(200);
+  const result = await raw.json() as TraceRun;
+  expect(raw.headers()["x-request-id"]).toBe(result.runId);
+  expect(result.probe.status).toBe("disponivel");
+  expect(result.metrics.failures).toBe(6);
+  expect((await request.post("/api/traceatlas", { data: { scenario: "invalido" } })).status()).toBe(422);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/traceatlas");
+  await page.getByRole("combobox", { name: "Cenário", exact: true }).selectOption("recuperacao");
+  await page.getByRole("button", { name: "Executar cenário" }).click();
+  await expect(page.getByText("Rastros disponíveis para investigação.")).toBeVisible();
+  const metrics = page.getByRole("region", { name: "Métricas do lote simulado" });
+  await expect(metrics).toContainText(/0\s*Falhas finais/);
+  await expect(metrics).toContainText(/6\s*Recuperados/);
+  await page.getByRole("checkbox", { name: "Só rastros com falha" }).check();
+  await expect(page.getByRole("button", { name: /^Rastro \d/ })).toHaveCount(6);
+  const timeline = page.getByRole("region", { name: "Linha do tempo" });
+  await timeline.getByRole("button", { name: /ERP Enviar pedido/ }).click();
+  await expect(timeline.getByRole("status")).toContainText("HTTP 503");
+  await timeline.getByRole("button", { name: /ERP Reenviar pedido/ }).click();
+  await expect(timeline.getByRole("status")).toContainText("HTTP 200");
+  await timeline.getByText("Ver logs correlacionados").click();
+  const probe = page.getByRole("region", { name: "Sonda do banco D1" });
+  const correlation = await probe.locator("code").innerText();
+  await expect(timeline.getByText(correlation + "-2", { exact: true })).toBeVisible();
+  await expect(probe).toContainText("Disponível");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
 test("Farol continua recuperando um pedido da quarentena", async ({ page }) => {

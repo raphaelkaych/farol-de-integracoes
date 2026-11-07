@@ -5,17 +5,17 @@ import { github, pageMetadata } from "../../../lib/portfolio-meta";
 
 const labs = {
   "plantao-ti": {
-    title: "Plantão de TI", index: "02",
+    title: "Plantão de TI", index: "07",
     description: "Abra chamados e veja como a fila muda quando o relógio avança ou um incidente é resolvido.",
     Demo: PlantaoDemo,
   },
   "ponte-erp": {
-    title: "Ponte ERP", index: "03",
+    title: "Ponte ERP", index: "05",
     description: "Teste o envio de um webhook, a validação da assinatura e o tratamento de uma entrega repetida.",
     Demo: PonteDemo,
   },
   "pulso-operacao": {
-    title: "Pulso da Operação", index: "04",
+    title: "Pulso da Operação", index: "06",
     description: "Compare três horários de corte sobre a mesma base de chamados e veja o que muda nos indicadores.",
     Demo: PulsoDemo,
   },

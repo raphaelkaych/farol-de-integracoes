@@ -19,7 +19,7 @@ test("home, seções e navegação abrem sem erros críticos", async ({ page }) 
 
 test("filtro e estudo de caso mantêm URL e rotas funcionais", async ({ page }) => {
   await page.goto("/projetos");
-  await expect(page.getByRole("heading", { name: "6 projetos" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "7 projetos" })).toBeVisible();
   await page.getByRole("link", { name: "QA & Automation" }).click();
   await expect(page).toHaveURL(/categoria=qualidade/);
   await expect(page.getByRole("heading", { name: "1 projeto", exact: true })).toBeVisible();
@@ -94,8 +94,9 @@ test("a digitação revela todas as letras e o atalho pula para o conteúdo", as
 });
 
 test("metadados, recursos e rotas legadas respondem", async ({ request }) => {
-  const pages = ["/", "/projetos", "/trajetoria", "/qualitygate", "/ledgerflow", "/farol",
+  const pages = ["/", "/projetos", "/trajetoria", "/qualitygate", "/ledgerflow", "/farol", "/traceatlas",
     "/demos/plantao-ti", "/demos/ponte-erp", "/demos/pulso-operacao",
+    "/projetos/qualitygate-studio", "/projetos/ledgerflow", "/projetos/traceatlas",
     "/projetos/farol-de-integracoes", "/projetos/plantao-ti", "/projetos/ponte-erp", "/projetos/pulso-operacao"];
   for (const path of pages) {
     const response = await request.get(path);
@@ -108,10 +109,15 @@ test("metadados, recursos e rotas legadas respondem", async ({ request }) => {
   expect((await request.get("/projetos/projeto-inexistente")).status()).toBe(404);
 });
 
-test("axe nas páginas inicial, de caso e de QualityGate", async ({ page }) => {
+test("axe nas páginas inicial, de caso e nos laboratórios QualityGate e TraceAtlas", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const path of ["/", "/projetos/qualitygate-studio", "/qualitygate"]) {
+  for (const path of ["/", "/projetos/qualitygate-studio", "/qualitygate", "/traceatlas"]) {
     await page.goto(path);
+    if (path === "/traceatlas") {
+      await page.getByRole("combobox", { name: "Cenário", exact: true }).selectOption("recuperacao");
+      await page.getByRole("button", { name: "Executar cenário" }).click();
+      await expect(page.getByRole("heading", { name: "Linha do tempo" })).toBeVisible();
+    }
     const report = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
     expect(report.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) })), path).toEqual([]);
   }

@@ -1,11 +1,11 @@
 # Próximas prioridades
 
-Os seis casos e suas demos são os projetos disponíveis nesta versão. As propostas a seguir têm critérios de entrada para que possam ser publicadas como aplicações verificáveis.
+Os sete casos e suas demos são os projetos disponíveis nesta versão. As propostas a seguir têm critérios de entrada para que possam ser publicadas como aplicações verificáveis.
 
 | Prioridade | Entrega | Critério para publicar |
 | --- | --- | --- |
-| 1 | TraceAtlas | Coletar spans de um fluxo controlado com correlation ID. Exibir uma falha e sua recuperação com origem, tempo e evidência. Distinguir instrumentação real de cenários simulados. |
-| 2 | ContractShield | Validar contrato OpenAPI e autorização contra uma API isolada. Cobrir acesso a objetos de outra sessão, limites e respostas negativas. |
+| 1 | ContractShield | Validar contrato OpenAPI e autorização contra uma API isolada. Cobrir acesso a objetos de outra sessão, limites e respostas negativas. |
+| 2 | TraceAtlas com coleta distribuída | Instrumentar dois serviços independentes com OpenTelemetry. Propagar contexto entre eles, exportar os spans para um coletor e verificar uma recuperação ponta a ponta. |
 | 3 | LedgerFlow com identidade própria | Modelar contas e aprovação, persistir lotes e lançamentos relacionais, testar migrações e isolamento de organizações. |
 | 4 | Farol assíncrono | Comparar o relógio do laboratório com um worker agendado, backoff com jitter e rastreamento por evento. |
 | 5 | AI Quality Lab | Construir um conjunto de perguntas com gabarito e fontes fictícias. Medir regressões sobre versões do sistema com um protocolo reproduzível. |

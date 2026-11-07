@@ -19,6 +19,7 @@ const notes = [
   { index: "01", title: "Quando parar de tentar entregar um evento?", detail: "O Farol limita as retentativas e preserva o ID quando um pedido precisa passar pela DLQ.", href: casePath("farol-de-integracoes") + "#decisoes" },
   { index: "02", title: "Como conferir que um teste detecta a falha?", detail: "O QualityGate executa a regra em duas variantes do mesmo serviço e compara o estado final.", href: casePath("qualitygate-studio") + "#qualidade" },
   { index: "03", title: "Por que guardar valores em centavos?", detail: "O LedgerFlow concilia quantias inteiras e registra a operação na mesma transação que altera os dados.", href: casePath("ledgerflow") + "#decisoes" },
+  { index: "04", title: "Como separar simulação e medição?", detail: "O TraceAtlas exibe os rastros simulados e mede a sonda real do D1 em um painel separado.", href: casePath("traceatlas") + "#decisoes" },
 ];
 
 const headline = ["Software que", "passa pelo teste."];
@@ -66,13 +67,7 @@ export default function Home() {
           <a className="button button-outline" href="/projetos">Ver todos os projetos <span aria-hidden="true">↗</span></a>
         </div>
         <div className="feature-grid">
-          {projects.slice(0, 3).map((project, index) => <ProjectCard key={project.slug} project={project} featured={index < 2} />)}
-          <aside className="showcase-note">
-            <p className="eyebrow">DA INTERFACE AO BANCO</p>
-            <h3>Veja as decisões no código</h3>
-            <p>Cada estudo explica a regra de negócio, o desenho da aplicação e como os testes verificam o comportamento. As demos usam dados fictícios.</p>
-            <a className="text-link" href="/projetos">Abrir a vitrine <span aria-hidden="true">↗</span></a>
-          </aside>
+          {projects.slice(0, 4).map((project, index) => <ProjectCard key={project.slug} project={project} featured={index < 2} />)}
         </div>
       </section>
 

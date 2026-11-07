@@ -76,7 +76,7 @@ export function Navigation() {
   }, [pathname]);
 
   const items = commands.filter((command) => normalized(command.label + ("keywords" in command ? " " + command.keywords : "")).includes(normalized(query.trim())));
-  const isLab = pathname.startsWith("/projetos") || ["/farol", "/qualitygate", "/ledgerflow"].includes(pathname) || pathname.startsWith("/demos/");
+  const isLab = pathname.startsWith("/projetos") || ["/farol", "/qualitygate", "/ledgerflow", "/traceatlas"].includes(pathname) || pathname.startsWith("/demos/");
   const current = isLab ? "projetos" : pathname === "/trajetoria" ? "trajetoria" : active;
 
   return (
