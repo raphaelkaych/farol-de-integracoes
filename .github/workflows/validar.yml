@@ -28,7 +28,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e -- --update-snapshots=missing
+      - run: npm run test:e2e
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: ${{ !cancelled() }}
         with:

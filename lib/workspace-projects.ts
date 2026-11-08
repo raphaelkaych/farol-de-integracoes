@@ -17,8 +17,7 @@ export const panels = {
   visao: "Visão geral", codigo: "Código", arquitetura: "Arquitetura", testes: "Testes", evidencias: "Evidências",
 };
 export type Panel = keyof typeof panels;
-export const verifiedRun = "https://github.com/raphaelkaych/farol-de-integracoes/actions/runs/42381664293";
-const workflow = "https://github.com/raphaelkaych/farol-de-integracoes/actions/workflows/validar.yml";
+const verifiedRun = "https://github.com/raphaelkaych/farol-de-integracoes/actions/runs/42509656423";
 const observed = "Cenário aprovado na execução de referência do GitHub Actions.";
 
 const data: Record<keyof typeof evidence, { nodes: Node[]; test: WorkspaceProject["test"] }> = {
@@ -72,7 +71,7 @@ const data: Record<keyof typeof evidence, { nodes: Node[]; test: WorkspaceProjec
       { input: "Chave de idempotência e mudança", output: "Um registro por chave no escopo", depends: "Restrição única e escrita SQL", failure: "Chave reutilizada com conteúdo diferente", kind: "Persistência" },
       { input: "Registro e versão solicitada", output: "DTO público validado pela suíte", depends: "OpenAPI e Playwright", failure: "Mudança incompatível de contrato", kind: "Teste" },
     ],
-    test: { title: "Contrato v2 e isolamento de objeto", kind: "Contrato OpenAPI e integração", result: "Consulte o resultado da suíte de contrato no pipeline.", link: workflow },
+    test: { title: "Contrato v2 e isolamento de objeto", kind: "Contrato OpenAPI e integração", result: observed, link: verifiedRun },
   },
 };
 
