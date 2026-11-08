@@ -143,6 +143,9 @@
 .case-section p { color: var(--muted); margin-top: .65rem; max-width: 73ch; }
 .case-section .links, .case-section > a { margin-top: .9rem; }
 .case-section > a.text-link { display: inline-block; }
+.decision-alternative { margin-top: .9rem; padding: .75rem .9rem; border-inline-start: 2px solid var(--accent); background: #0b172b; }
+.decision-alternative h3 { font-size: 1rem; }
+.decision-alternative p { margin-top: .25rem; }
 .architecture, .decision-list { display: grid; gap: .55rem; margin-top: .9rem; }
 .architecture details, .decision-list article { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
 .architecture summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 2rem 1fr auto; padding: .7rem .85rem; gap: .55rem; align-items: center; }
@@ -188,7 +191,7 @@
 @media print {
   :root { color-scheme: light; --ink: #111; --muted: #333; --accent: #123866; --line: #aaa; }
   body { color: var(--ink); background: white; }
-  .site-header, .site-footer, .career-page .back-link, .print-button, .skip-link, .vindex-art, .vindex-demo { display: none; }
+  .site-header, .site-footer, .career-page .back-link, .print-button, .skip-link, .vindex-art, .vindex-demo, .resume-quick { display: none; }
   .career-page { padding: 0; }
   .milestone, .casa-flow span, .vindex-feature { color: var(--ink); background: transparent; }
   .vindex-feature { display: block; padding: .75rem; margin-top: 1rem; }

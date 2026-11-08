@@ -1,0 +1,531 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ContractShield",
+    "version": "2.0.0",
+    "description": "Contrato da API demonstrativa de mudanças. As sessões duram 15 minutos e trabalham com duas organizações fictícias."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/contractshield/session": {
+      "post": {
+        "summary": "Abrir sessão temporária",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Credenciais fictícias da sessão",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sandbox"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Corpo acima de 2 KiB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Tipo de conteúdo inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validação ou regra de negócio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Armazenamento ou capacidade indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contractshield/changes": {
+      "get": {
+        "summary": "Consultar mudanças do escopo",
+        "security": [
+          {
+            "demoBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Sem ID, a operação devolve até 12 mudanças.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "A versão 2 acrescenta revision.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "2"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Objeto ou lista no escopo da credencial",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ChangeV1"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ChangeList"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credencial ausente, inválida ou expirada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Objeto fora do escopo ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validação ou regra de negócio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite por minuto da sessão",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Armazenamento ou capacidade indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Registrar mudança",
+        "security": [
+          {
+            "demoBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{12,64}$"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "A versão 2 acrescenta revision.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "2"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Limite de 2 KiB. Mudanças em cobrança exigem janela noturna.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reenvio idêntico com o ID original",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeV1"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Mudança criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeV1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credencial ausente, inválida ou expirada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Perfil somente leitura",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflito de chave ou capacidade da sessão",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Corpo acima de 2 KiB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Tipo de conteúdo inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validação ou regra de negócio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite por minuto da sessão",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Armazenamento ou capacidade indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "demoBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "sandbox.secret"
+      }
+    },
+    "schemas": {
+      "Sandbox": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actors",
+          "expiresAt"
+        ],
+        "properties": {
+          "actors": {
+            "type": "object",
+            "required": [
+              "operador",
+              "leitor",
+              "externo"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "operador": {
+                "type": "string",
+                "pattern": "^[0-9a-f-]{36}\\.[0-9a-f-]{36}$"
+              },
+              "leitor": {
+                "type": "string",
+                "pattern": "^[0-9a-f-]{36}\\.[0-9a-f-]{36}$"
+              },
+              "externo": {
+                "type": "string",
+                "pattern": "^[0-9a-f-]{36}\\.[0-9a-f-]{36}$"
+              }
+            }
+          },
+          "expiresAt": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "ChangeInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "service",
+          "releaseWindow"
+        ],
+        "properties": {
+          "service": {
+            "type": "string",
+            "enum": [
+              "catalogo",
+              "notificacoes",
+              "cobranca"
+            ]
+          },
+          "releaseWindow": {
+            "type": "string",
+            "enum": [
+              "comercial",
+              "noturna"
+            ]
+          }
+        }
+      },
+      "ChangeV1": {
+        "type": "object",
+        "description": "Leitura tolerante a propriedades públicas adicionadas em versões futuras.",
+        "required": [
+          "id",
+          "service",
+          "releaseWindow",
+          "status",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+          },
+          "service": {
+            "type": "string",
+            "enum": [
+              "catalogo",
+              "notificacoes",
+              "cobranca"
+            ]
+          },
+          "releaseWindow": {
+            "type": "string",
+            "enum": [
+              "comercial",
+              "noturna"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "const": "registrada"
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "ChangeV2": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ChangeV1"
+          },
+          {
+            "type": "object",
+            "required": [
+              "revision"
+            ],
+            "properties": {
+              "revision": {
+                "type": "integer",
+                "const": 1
+              }
+            }
+          }
+        ]
+      },
+      "ChangeList": {
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/ChangeV1"
+            }
+          }
+        }
+      },
+      "Problem": {
+        "type": "object",
+        "required": [
+          "code",
+          "error"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

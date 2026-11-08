@@ -2,6 +2,16 @@ import { casePath, type Project } from "../lib/project-index";
 import { analyze } from "../lib/traceatlas/model";
 
 export function ProjectPreview({ slug }: { slug: string }) {
+  if (slug === "contractshield") {
+    return (
+      <div className="project-preview" aria-hidden="true">
+        <div className="preview-head"><span><i /> CONTRACTSHIELD</span><span>EXEMPLOS DE CONTRATO</span></div>
+        <div className="preview-ledger-row"><code>POST</code><b>Operador</b><span>201</span></div>
+        <div className="preview-ledger-row"><code>GET</code><b>Outro escopo</b><span>404</span></div>
+        <div className="preview-ledger-row"><code>POST</code><b>Mesma chave</b><span>200</span></div>
+      </div>
+    );
+  }
   if (slug === "qualitygate-studio") {
     return (
       <div className="project-preview preview-qa" aria-hidden="true">

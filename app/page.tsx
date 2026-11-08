@@ -24,6 +24,8 @@ const notes = [
 ];
 
 const headline = ["Software que", "passa pelo teste."];
+const featured = ["qualitygate-studio", "contractshield", "ledgerflow", "traceatlas"]
+  .flatMap((slug) => projects.filter((project) => project.slug === slug));
 
 function Headline() {
   return (
@@ -50,8 +52,8 @@ export default function Home() {
             <p className="hero-lead">Desenvolvimento de software e engenharia de qualidade.</p>
             <p className="hero-note">Estudo ADS na Fatec Praia Grande. Uso o que aprendi sustentando sistemas para criar aplicações, APIs e automações de teste que você pode experimentar.</p>
             <div className="links hero-actions">
-              <a className="button button-primary" href="#projetos">Explorar projetos <span aria-hidden="true">↓</span></a>
-              <a className="button button-outline" href={github}>GitHub <span aria-hidden="true">↗</span></a>
+              <a className="button button-primary" href="/workspace">Explorar Workspace <span aria-hidden="true">↗</span></a>
+              <a className="button button-outline" href="#projetos">Explorar projetos <span aria-hidden="true">↓</span></a>
               <a className="text-link" href="/trajetoria">Currículo <span aria-hidden="true">↗</span></a>
             </div>
           </div>
@@ -69,7 +71,7 @@ export default function Home() {
           <a className="button button-outline" href="/projetos">Ver todos os projetos <span aria-hidden="true">↗</span></a>
         </div>
         <div className="feature-grid" data-enter>
-          {projects.slice(0, 4).map((project, index) => <ProjectCard key={project.slug} project={project} featured={index < 2} />)}
+          {featured.map((project, index) => <ProjectCard key={project.slug} project={project} featured={index < 2} />)}
         </div>
       </section>
 

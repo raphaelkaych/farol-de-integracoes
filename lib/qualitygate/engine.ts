@@ -27,15 +27,19 @@ const examples: Record<Scenario, Order> = {
   role: { ref: "PED-130", quantity: 1, role: "leitor" },
 };
 
-function check(scenario: Scenario, inventory: Inventory, responses: Response[]) {
-  const first = responses[0];
+function verify(scenario: Scenario, inventory: Inventory, responses: Response[]) {
+  const assertions = [
+    { label: "Respostas HTTP", expected: scenario === "replay" ? "201 → 200" : scenario === "stock" ? "409" : "403",
+      actual: responses.map((response) => response.code).join(" → ") },
+    { label: "Saldo final", expected: scenario === "replay" ? "2" : "4", actual: String(inventory.available) },
+    { label: "Recibos gravados", expected: scenario === "replay" ? "1" : "0", actual: String(inventory.receipts.length) },
+  ];
   if (scenario === "replay") {
-    const second = responses[1];
-    return first.code === 201 && second.code === 200 && first.receipt === second.receipt &&
-      inventory.receipts.length === 1 && inventory.available === 2;
+    const [first, second] = responses;
+    assertions.push({ label: "Recibo no reenvio", expected: "Mesmo identificador",
+      actual: first.receipt && first.receipt === second.receipt ? "Mesmo identificador" : "Identificadores diferentes ou ausentes" });
   }
-  return first.code === (scenario === "stock" ? 409 : 403) &&
-    inventory.available === 4 && inventory.receipts.length === 0;
+  return assertions.map((assertion) => ({ ...assertion, passed: assertion.expected === assertion.actual }));
 }
 
 function exercise(scenario: Scenario, injectDefect: boolean) {
@@ -44,7 +48,8 @@ function exercise(scenario: Scenario, injectDefect: boolean) {
   const fault = injectDefect ? scenario : undefined;
   const responses = [reserve(inventory, order, fault)];
   if (scenario === "replay") responses.push(reserve(inventory, order, fault));
-  return { responses, inventory, conforms: check(scenario, inventory, responses) };
+  const assertions = verify(scenario, inventory, responses);
+  return { responses, inventory, assertions, conforms: assertions.every((assertion) => assertion.passed) };
 }
 
 export function compare(scenario: Scenario) {

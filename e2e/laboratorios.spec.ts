@@ -34,7 +34,10 @@ test("LedgerFlow importa, concilia, filtra, exporta e grava auditoria", async ({
   await page.getByRole("button", { name: "Conciliar agora" }).click();
   await expect(page.getByRole("status")).toContainText("1 referência(s) conciliada(s)");
   await page.getByRole("combobox", { name: "Estado" }).selectOption("divergente");
-  await expect(page.getByRole("row", { name: /LF-1002 B-102/ })).toBeVisible();
+  const divergent = page.getByRole("row", { name: /LF-1002 B-102/ });
+  await expect(divergent).toBeVisible();
+  await divergent.getByRole("button", { name: "Inspecionar LF-1002" }).click();
+  await expect(page.getByRole("region", { name: "Comparação de LF-1002" })).toContainText("Diferença de valor");
   await expect(page.getByRole("row", { name: /LF-1001/ })).toHaveCount(0);
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Exportar recorte" }).click();

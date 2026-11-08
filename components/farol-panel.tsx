@@ -37,6 +37,7 @@ export function FarolPanel() {
     try { saved = sessionStorage.getItem(sessionKey) ?? ""; } catch { return; }
     if (!saved) return;
     const request = new AbortController();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Block new actions while restoring an external browser session.
     setPending(true);
     fetch("/api/farol", { headers: { Authorization: "Bearer " + saved }, signal: request.signal })
       .then(async (response) => {

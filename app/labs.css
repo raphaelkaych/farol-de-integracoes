@@ -115,8 +115,26 @@ input::placeholder { color: var(--quiet); }
 .return-contract { border-top: 1px solid var(--line); padding-top: .65rem; }
 .return-contract summary { color: var(--accent); cursor: pointer; }
 .return-contract ul { margin-bottom: 0; padding-inline-start: 1.25rem; color: var(--muted); font-size: .86rem; }
+.qa-assertions { display: grid; gap: .42rem; margin-block: .7rem; }
+.qa-assertions > div { border-inline-start: 2px solid var(--success); padding: .38rem .62rem; background: #0d1c32; }
+.qa-assertions > div[data-passed="false"] { border-color: var(--warning); }
+.qa-assertions dt { font-weight: 630; font-size: .83rem; }
+.qa-assertions dd { margin: 0; color: var(--muted); font-size: .8rem; }
+.qa-assertions code { color: var(--ink); }
+.ledger-inspect { border: 0; padding: 0; background: none; text-decoration: underline; }
+.ledger-inspection ul { padding-inline-start: 1.15rem; margin-block: .35rem; color: var(--muted); }
+.trace-filters { display: grid; gap: .52rem; margin-block: .6rem; }
+.trace-filters label { display: grid; gap: .2rem; font-size: .8rem; }
+.trace-filters :is(select, input) { width: 100%; min-width: 0; }
+.contract-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: start; gap: .85rem; }
+.contract-grid > section { min-width: 0; }
+.contract-controls, .contract-controls label { display: grid; gap: .55rem; }
+.contract-controls select { width: 100%; min-width: 0; }
+.contract-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+.contract-response .lab-meta { padding: .45rem .8rem 0; overflow-wrap: anywhere; }
+.contract-grid .return-contract { margin-top: .85rem; }
 @media (max-width: 680px) {
-  .trace-layout, .return-layout { grid-template-columns: minmax(0, 1fr); }
+  .trace-layout, .return-layout, .contract-grid { grid-template-columns: minmax(0, 1fr); }
   .trace-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 365px) {

@@ -21,12 +21,20 @@ const sections = [
   ["qualidade", "Segurança e testes"], ["demo", "Demonstração"], ["limites", "Limites e próximos passos"],
 ] as const;
 
+const alternatives: Record<string, string> = {
+  "qualitygate-studio": "Um teste que confere apenas o HTTP seria menor. A comparação de saldo e recibos acrescenta evidência de que a regra preservou os dados.",
+  ledgerflow: "Tabelas relacionais por lançamento facilitariam consultas analíticas em lotes maiores. O documento por sessão mantém o lote demonstrativo limitado e a escrita com auditoria atômica.",
+  traceatlas: "Um coletor OpenTelemetry permitiria investigar processos distribuídos reais. Os cenários com relógio simulado mantêm o resultado reproduzível e a sonda D1 oferece uma medição separada.",
+  contractshield: "Um servidor independente com PostgreSQL facilitaria operação autônoma. O Worker e o D1 existentes permitem verificar transações e isolamento no ambiente publicado com uma migração aditiva.",
+};
+
 export default async function CasePage({ params }: Props) {
   const { slug } = await params;
   const project = findProject(slug);
   const detail = cases.find((item) => item.slug === slug);
   if (!project || !detail) notFound();
   const inWorkspace = project.code.startsWith(siteRepository);
+  const contract = slug === "contractshield" ? "/contractshield.openapi.json" : slug === "radar-de-retorno" ? project.code : "/api-contract.json";
 
   return (
     <main id="conteudo" tabIndex={-1} className="shell inner-page">
@@ -63,6 +71,7 @@ export default async function CasePage({ params }: Props) {
                 </details>
               ))}
             </div>
+            {inWorkspace && <a className="text-link" href={"/workspace?projeto=" + slug + "&painel=arquitetura"}>Explorar entradas, saídas e falhas no Workspace ↗</a>}
           </section>
           <section id="decisoes" className="case-section">
             <h2>Decisões e desafios</h2>
@@ -72,12 +81,14 @@ export default async function CasePage({ params }: Props) {
             <figure className="code-sample"><figcaption>{detail.snippetLabel}</figcaption>
               <pre tabIndex={0} aria-label="Trecho de código"><code>{detail.snippet}</code></pre>
             </figure>
+            {alternatives[slug] && <aside className="decision-alternative"><h3>Alternativa e custo</h3><p>{alternatives[slug]}</p></aside>}
           </section>
           <section id="qualidade" className="case-section">
             <h2>Segurança e estratégia de testes</h2><p>{detail.quality}</p><p>{detail.tests}</p>
             <div className="links">
               {inWorkspace && <a className="text-link" href={siteRepository + "/actions/workflows/validar.yml"}>Execuções no GitHub Actions ↗</a>}
-              {inWorkspace && <a className="text-link" href="/api-contract.json">Contrato HTTP ↗</a>}
+              {inWorkspace && <a className="text-link" href={contract}>{slug === "radar-de-retorno" ? "Schema da validação" : "Contrato HTTP"} ↗</a>}
+              {inWorkspace && <a className="text-link" href={"/workspace?projeto=" + slug + "&painel=testes"}>Explorar testes ↗</a>}
               {!inWorkspace && <a className="text-link" href={project.code}>Instruções e testes no repositório ↗</a>}
             </div>
             {slug === "qualitygate-studio" && (

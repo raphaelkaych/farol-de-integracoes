@@ -1,21 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { scenarios, type Scenario, type Span, type Trace, type TraceRun } from "../lib/traceatlas/model";
+import { scenarios, type Scenario, type Service, type Span, type Trace, type TraceRun } from "../lib/traceatlas/model";
 import { useBrowserReady } from "./use-browser-ready";
 
 const hasError = (trace: Trace) => trace.spans.some((span) => span.status === "erro");
+const services: Service[] = ["Gateway", "API", "Banco", "Worker", "ERP"];
 
-function Timeline({ trace }: { trace: Trace }) {
+function Timeline({ trace, service }: { trace: Trace; service: Service | "" }) {
   const [selected, setSelected] = useState<Span | null>(null);
   const depth = (item: Span) => item.parent === null ? 0 : item.parent === "gateway" ? 1 : item.parent === "api" ? 2 : 3;
+  const children = new Set(trace.spans.map((item) => item.parent));
+  const slowest = trace.spans.filter((item) => !children.has(item.id)).sort((a, b) => b.durationMs - a.durationMs)[0];
+  const spans = service ? trace.spans.filter((item) => item.service === service) : trace.spans;
+  const shown = new Set(spans.map((item) => item.id));
 
   return (
     <section className="lab-panel trace-timeline" aria-labelledby="trace-timeline-title">
       <h2 id="trace-timeline-title">Linha do tempo</h2>
       <p className="lab-meta">Cada barra indica o início e a duração de uma etapa no relógio simulado.</p>
+      {slowest && <p className="lab-guide">Maior etapa sem suboperações <strong>{slowest.service} · {slowest.durationMs} ms</strong></p>}
       <ol className="trace-spans">
-        {trace.spans.map((item) => (
+        {spans.map((item) => (
           <li key={item.id}>
             <button className="span-row" type="button" aria-pressed={selected?.id === item.id}
               onClick={() => setSelected(item)}>
@@ -36,7 +42,7 @@ function Timeline({ trace }: { trace: Trace }) {
       <details className="trace-log">
         <summary>Ver logs correlacionados</summary>
         <p className="lab-meta"><code>{trace.id}</code></p>
-        <ol className="audit-list">{trace.logs.map((log) => <li key={log.spanId}>
+        <ol className="audit-list">{trace.logs.filter((log) => shown.has(log.spanId)).map((log) => <li key={log.spanId}>
           <code>+{log.atMs} ms</code><span><strong>{log.level}</strong> · {log.text}</span>
         </li>)}</ol>
       </details>
@@ -50,11 +56,13 @@ export function TraceAtlas() {
   const [run, setRun] = useState<TraceRun>();
   const [traceId, setTraceId] = useState("");
   const [errorsOnly, setErrorsOnly] = useState(false);
+  const [service, setService] = useState<Service | "">("");
+  const [correlation, setCorrelation] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
   async function execute() {
-    setPending(true); setError("");
+    setPending(true); setError(""); setRun(undefined);
     try {
       const response = await fetch("/api/traceatlas", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scenario }),
@@ -63,6 +71,7 @@ export function TraceAtlas() {
       const result = await response.json() as TraceRun;
       setRun(result);
       setErrorsOnly(false);
+      setService(""); setCorrelation("");
       setTraceId((result.traces.find(hasError) ?? result.traces[0]).id);
     } catch {
       setError("A API não respondeu. Tente executar o cenário novamente.");
@@ -71,8 +80,13 @@ export function TraceAtlas() {
     }
   }
 
-  const visible = run?.traces.filter((trace) => !errorsOnly || hasError(trace)) ?? [];
+  const visible = run?.traces.filter((trace) =>
+    (!errorsOnly || hasError(trace)) &&
+    (!service || trace.spans.some((span) => span.service === service)) &&
+    trace.id.includes(correlation.trim().toLowerCase())) ?? [];
   const selected = visible.find((trace) => trace.id === traceId) ?? visible[0];
+  const durations = run?.traces.map((trace) => trace.durationMs).sort((a, b) => a - b) ?? [];
+  const percentile = (fraction: number) => durations[Math.ceil(fraction * durations.length) - 1];
 
   return (
     <>
@@ -94,7 +108,7 @@ export function TraceAtlas() {
       {run && (
         <>
           <section className="lab-summary ledger-summary" aria-label="Métricas do lote simulado">
-            {[[run.metrics.count, "Rastros"], [run.metrics.p95 + " ms", "P95 simulado"], [run.metrics.failures, "Falhas finais"], [run.metrics.recovered, "Recuperados"]].map(([value, label]) => (
+            {[[percentile(.5) + " ms", "P50 simulado"], [run.metrics.p95 + " ms", "P95 simulado"], [percentile(.99) + " ms", "P99 simulado"], [run.metrics.failures, "Falhas finais"], [run.metrics.recovered, "Recuperados"]].map(([value, label]) => (
               <div className="metric" key={label}><b>{value}</b><span>{label}</span></div>
             ))}
           </section>
@@ -102,6 +116,13 @@ export function TraceAtlas() {
             <section className="lab-panel" aria-labelledby="trace-list-title">
               <h2 id="trace-list-title">{scenarios[run.scenario].title}</h2>
               <p className="lab-meta">Rastros do lote simulado</p>
+              <div className="trace-filters">
+                <label>Serviço<select value={service} onChange={(event) => setService(event.target.value as Service | "")}>
+                  <option value="">Todos</option>{services.map((item) => <option key={item}>{item}</option>)}
+                </select></label>
+                <label>ID de correlação<input type="search" value={correlation} maxLength={42}
+                  onChange={(event) => setCorrelation(event.target.value)} placeholder="Buscar rastro" /></label>
+              </div>
               <label className="trace-filter"><input type="checkbox" checked={errorsOnly} onChange={(event) => setErrorsOnly(event.target.checked)} /> Só rastros com falha</label>
               <ol className="trace-list">
                 {visible.map((trace) => (
@@ -111,9 +132,9 @@ export function TraceAtlas() {
                   </button></li>
                 ))}
               </ol>
-              {!visible.length && <p className="lab-meta">Nenhum rastro com falha neste lote.</p>}
+              {!visible.length && <p className="lab-meta">Nenhum rastro corresponde aos filtros.</p>}
             </section>
-            {selected && <Timeline key={selected.id} trace={selected} />}
+            {selected && <Timeline key={selected.id + service} trace={selected} service={service} />}
           </div>
           <section className="lab-panel trace-probe" aria-labelledby="trace-probe-title">
             <p className="eyebrow">MEDIÇÃO REAL DA DEMO</p>

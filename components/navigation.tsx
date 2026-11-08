@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { casePath, projects } from "../lib/project-index";
 import { github, vindexPath } from "../lib/portfolio-meta";
+import { useBrowserReady } from "./use-browser-ready";
 
 const nav = [
   { id: "inicio", label: "Início", href: "/" },
   { id: "projetos", label: "Projetos", href: "/projetos" },
+  { id: "workspace", label: "Workspace", href: "/workspace" },
   { id: "engenharia", label: "Engenharia", href: "/#engenharia" },
   { id: "trajetoria", label: "Trajetória", href: "/#trajetoria" },
   { id: "contato", label: "Contato", href: "/#contato" },
@@ -17,6 +19,8 @@ const commands = [
   ...nav,
   { id: "curriculo", label: "Currículo online", href: "/trajetoria", keywords: "experiência formação pdf" },
   { id: "vindex-fiscal", label: "Vindex Fiscal", href: vindexPath, keywords: "SEFAZ integração fiscal" },
+  { id: "workspace-code", label: "Código no Workspace", href: "/workspace?painel=codigo", keywords: "arquivo trecho código" },
+  { id: "workspace-tests", label: "Testes no Workspace", href: "/workspace?painel=testes", keywords: "teste execução evidência" },
   ...projects.map((project) => ({ id: project.slug, label: project.name, href: casePath(project.slug), keywords: project.stack.join(" ") })),
   { id: "github", label: "Perfil do GitHub", href: github },
 ];
@@ -27,7 +31,7 @@ function normalized(value: string) {
 
 export function Navigation() {
   const [menu, setMenu] = useState(false);
-  const [ready, setReady] = useState(false);
+  const ready = useBrowserReady();
   const [active, setActive] = useState("inicio");
   const [query, setQuery] = useState("");
   const pathname = usePathname();
@@ -62,7 +66,6 @@ export function Navigation() {
       }
     }
     document.addEventListener("keydown", shortcut, true);
-    setReady(true);
     return () => document.removeEventListener("keydown", shortcut, true);
   }, []);
 
@@ -78,8 +81,8 @@ export function Navigation() {
   }, [pathname]);
 
   const items = commands.filter((command) => normalized(command.label + ("keywords" in command ? " " + command.keywords : "")).includes(normalized(query.trim())));
-  const isLab = pathname.startsWith("/projetos") || ["/farol", "/qualitygate", "/ledgerflow", "/traceatlas", "/radar-de-retorno"].includes(pathname) || pathname.startsWith("/demos/");
-  const current = isLab ? "projetos" : pathname === "/trajetoria" ? "trajetoria" : active;
+  const isLab = pathname.startsWith("/projetos") || projects.some((project) => project.demo === pathname);
+  const current = isLab ? "projetos" : pathname === "/workspace" ? "workspace" : pathname === "/trajetoria" ? "trajetoria" : active;
 
   return (
     <>

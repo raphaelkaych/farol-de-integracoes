@@ -1,0 +1,147 @@
+{
+  "qualitygate-studio": [
+    {
+      "kind": "API",
+      "file": "lib/qualitygate/http.ts",
+      "line": 5,
+      "end": 16,
+      "code": "export async function runQualityCheck(request: Request) {\n  try {\n    const body = await readJson(request, 1024);\n    if (typeof body.scenario !== \"string\" || !Object.hasOwn(scenarios, body.scenario)) {\n      throw new ApiError(422, \"Escolha um cenário do laboratório.\");\n    }\n    return json(compare(body.scenario as Scenario));\n  } catch (error) {\n    if (error instanceof ApiError) return json({ error: error.message }, error.status);\n    throw error;\n  }\n}"
+    },
+    {
+      "kind": "Regra",
+      "file": "lib/qualitygate/engine.ts",
+      "line": 30,
+      "end": 43,
+      "code": "function verify(scenario: Scenario, inventory: Inventory, responses: Response[]) {\n  const assertions = [\n    { label: \"Respostas HTTP\", expected: scenario === \"replay\" ? \"201 → 200\" : scenario === \"stock\" ? \"409\" : \"403\",\n      actual: responses.map((response) => response.code).join(\" → \") },\n    { label: \"Saldo final\", expected: scenario === \"replay\" ? \"2\" : \"4\", actual: String(inventory.available) },\n    { label: \"Recibos gravados\", expected: scenario === \"replay\" ? \"1\" : \"0\", actual: String(inventory.receipts.length) },\n  ];\n  if (scenario === \"replay\") {\n    const [first, second] = responses;\n    assertions.push({ label: \"Recibo no reenvio\", expected: \"Mesmo identificador\",\n      actual: first.receipt && first.receipt === second.receipt ? \"Mesmo identificador\" : \"Identificadores diferentes ou ausentes\" });\n  }\n  return assertions.map((assertion) => ({ ...assertion, passed: assertion.expected === assertion.actual }));\n}"
+    },
+    {
+      "kind": "Teste",
+      "file": "e2e/laboratorios.spec.ts",
+      "line": 183,
+      "end": 193,
+      "code": "  test(\"um leitor nunca deveria conseguir criar uma reserva\", async ({ page }, testInfo) => {\n    await page.goto(\"/qualitygate\");\n    await page.getByRole(\"radio\", { name: /Permissão de escrita/ }).check();\n    await page.getByRole(\"button\", { name: \"Executar comparação\" }).click();\n    const defective = page.getByRole(\"article\", { name: \"Implementação com defeito\" });\n    await expect(defective).toContainText(\"HTTP 201\");\n    await testInfo.attach(\"reserva-indevida\", { body: await page.screenshot({ fullPage: true }), contentType: \"image/png\" });\n    test.fail(true, \"A versão com a falha injetada aceita a escrita do perfil leitor.\");\n    await expect(defective).toContainText(\"HTTP 403\", { timeout: 1200 });\n  });\n});"
+    }
+  ],
+  "ledgerflow": [
+    {
+      "kind": "Validação",
+      "file": "lib/ledgerflow/model.ts",
+      "line": 66,
+      "end": 80,
+      "code": "export function parseCsv(input: string): Entry[] {\n  const lines = input.replace(/^\\uFEFF/, \"\").trimEnd().split(/\\r?\\n/);\n  if (lines[0] !== header) throw new LedgerError(\"Use o cabeçalho do CSV de exemplo.\");\n  if (lines.length < 2 || lines.length > maxEntries + 1) throw new LedgerError(\"O CSV precisa ter de 1 a 48 linhas de dados.\");\n  return lines.slice(1).map((line, index) => {\n    const parts = line.split(\",\").map((value) => value.trim());\n    const [id, reference, origin, date, amount] = parts;\n    const cents = Number(amount);\n    if (parts.length !== 5 || !idPattern.test(id) || !validReference(reference) || !originOf(origin) ||\n        id[0] !== (origin === \"banco\" ? \"B\" : \"S\") || !dateOf(date) || !/^\\d{1,8}$/.test(amount) || !centsOf(cents)) {\n      throw new LedgerError(\"Dados inválidos na linha \" + (index + 2) + \". Confira os campos do exemplo.\");\n    }\n    return { id, reference, origin, date, cents };\n  });\n}"
+    },
+    {
+      "kind": "Regra",
+      "file": "lib/ledgerflow/model.ts",
+      "line": 100,
+      "end": 116,
+      "code": "export function statusByReference(ledger: Ledger) {\n  const grouped = new Map<string, { banco: Entry[]; sistema: Entry[] }>();\n  for (const entry of ledger.entries) {\n    const pair = grouped.get(entry.reference) ?? { banco: [], sistema: [] };\n    pair[entry.origin].push(entry);\n    grouped.set(entry.reference, pair);\n  }\n  const statuses = new Map<string, Status>();\n  for (const [reference, pair] of grouped) {\n    const [bank] = pair.banco;\n    const [system] = pair.sistema;\n    let status: Status = \"pendente\";\n    if (ledger.reconciled && (pair.banco.length > 1 || pair.sistema.length > 1)) {\n      status = \"ambigua\";\n    } else if (ledger.reconciled && bank && system) {\n      const days = Math.abs(Date.parse(bank.date) - Date.parse(system.date)) / dayMs;\n      status = bank.cents === system.cents && days <= 2 ? \"conciliada\" : \"divergente\";"
+    },
+    {
+      "kind": "Persistência",
+      "file": "lib/ledgerflow/store.ts",
+      "line": 37,
+      "end": 51,
+      "code": "    async write(key, revision, ledger, action, detail) {\n      const nonce = crypto.randomUUID();\n      const [changed] = await db.batch([\n        db.prepare(`\n          UPDATE ledger_sessions SET payload = ?, revision = revision + 1, nonce = ?\n          WHERE id = ? AND secret_hash = ? AND expires_at > ? AND role = 'analista' AND revision = ?\n        `).bind(JSON.stringify(ledger), nonce, key.id, key.hash, key.now, revision),\n        db.prepare(`\n          INSERT INTO ledger_audit (session_id, rev, action, detail, recorded_at)\n          SELECT id, revision, ?, ?, ? FROM ledger_sessions WHERE id = ? AND nonce = ?\n        `).bind(action, detail, key.now, key.id, nonce),\n      ]);\n      return changed.meta.changes === 1;\n    },\n  };"
+    },
+    {
+      "kind": "Teste",
+      "file": "e2e/laboratorios.spec.ts",
+      "line": 53,
+      "end": 75,
+      "code": "test(\"LedgerFlow recusa escrita de leitor e alterações concorrentes na mesma revisão\", async ({ request }) => {\n  const open = async (role: string) => {\n    const response = await request.post(\"/api/ledgerflow\", { data: { action: \"iniciar\", role } });\n    expect(response.status()).toBe(201);\n    return (await response.json()).token as string;\n  };\n  const post = (token: string, data: unknown) => request.post(\"/api/ledgerflow\", { data, headers: { Authorization: \"Bearer \" + token } });\n  const read = (token: string) => request.get(\"/api/ledgerflow\", { headers: { Authorization: \"Bearer \" + token } });\n  const reader = await open(\"leitor\");\n  const analyst = await open(\"analista\");\n  expect((await post(reader, { action: \"conciliar\", role: \"analista\", version: 0 })).status()).toBe(403);\n  expect((await read(analyst.split(\".\")[0] + \".\" + reader.split(\".\")[1])).status()).toBe(404);\n  const body = { action: \"importar\", csv: sampleCsv, version: 0 };\n  const outcomes = await Promise.all([post(analyst, body), post(analyst, body)]);\n  expect(outcomes.map((response) => response.status()).sort()).toEqual([200, 409]);\n  const conflict = await post(analyst, { action: \"importar\", version: 1, csv: header + \"\\nB-101,LF-1001,banco,2026-10-02,1\" });\n  expect(conflict.status()).toBe(409);\n  const { state } = await (await read(analyst)).json();\n  expect(state.entries).toHaveLength(6);\n  expect(state.audit).toHaveLength(1);\n  expect(state.revision).toBe(1);\n  const { state: isolated } = await (await read(reader)).json();\n  expect(isolated.entries).toHaveLength(3);"
+    }
+  ],
+  "farol-de-integracoes": [
+    {
+      "kind": "Regra",
+      "file": "lib/farol/model.ts",
+      "line": 71,
+      "end": 92,
+      "code": "function runRound(state: State) {\n  const due = nextDue(state);\n  if (due === null) throw new InvalidAction(\"A fila não tem eventos pendentes.\");\n  state.now = Math.max(state.now, due);\n\n  for (const event of state.events) {\n    if ((event.status !== \"fila\" && event.status !== \"retentativa\") || event.due > state.now) continue;\n    event.attempts += 1;\n    event.cycleAttempts += 1;\n    if (destinationIsUp(state)) {\n      event.status = \"entregue\";\n      state.audit.push({ at: state.now, kind: \"entregue\", eventId: event.id, http: 200 });\n      continue;\n    }\n    const delay = delays[event.cycleAttempts - 1];\n    if (delay === undefined) {\n      event.status = \"dlq\";\n      state.audit.push({ at: state.now, kind: \"dlq\", eventId: event.id, http: 503 });\n    } else {\n      event.status = \"retentativa\";\n      event.due = state.now + delay;\n      state.audit.push({ at: state.now, kind: \"retentativa\", eventId: event.id, http: 503, nextAt: event.due });"
+    },
+    {
+      "kind": "Persistência",
+      "file": "lib/farol/store.ts",
+      "line": 22,
+      "end": 35,
+      "code": "export function d1RunStore(db: D1Database): RunStore {\n  return {\n    async create(run, now) {\n      const [, insert] = await db.batch([\n        db.prepare(\"DELETE FROM farol_runs WHERE expires_at <= ?\").bind(now),\n        db.prepare(`\n          INSERT INTO farol_runs (id, secret_hash, scenario, expires_at)\n          SELECT ?, ?, ?, ? WHERE (SELECT COUNT(*) FROM farol_runs) < 800\n        `).bind(run.id, run.secretHash, run.scenario, run.expiresAt),\n      ]);\n      return insert.meta.changes === 1;\n    },\n\n    async get(id, secretHash, now) {"
+    },
+    {
+      "kind": "Teste",
+      "file": "tests/farol.test.ts",
+      "line": 65,
+      "end": 77,
+      "code": "test(\"DLQ preserva o histórico e só permite reprocessar com o destino disponível\", () => {\n  const failed = [\"rodada\", \"rodada\", \"rodada\"] as const;\n  assert.equal(replay(\"indisponivel\", failed).events[0].status, \"dlq\");\n  assert.throws(() => replay(\"indisponivel\", [...failed, \"reprocessar\"]), InvalidAction);\n\n  const recovered = replay(\"indisponivel\", [...failed, \"recuperar\", \"reprocessar\", \"rodada\"]);\n  assert.equal(destinationIsUp(recovered), true);\n  assert.equal(recovered.events[0].id, \"evt-1042\");\n  assert.equal(recovered.events[0].status, \"entregue\");\n  assert.equal(recovered.events[0].attempts, 4);\n  assert.equal(recovered.events[0].cycleAttempts, 1);\n  assert.deepEqual(recovered.audit.slice(-4).map((row) => row.kind), [\"dlq\", \"recuperado\", \"reprocessado\", \"entregue\"]);\n});"
+    }
+  ],
+  "traceatlas": [
+    {
+      "kind": "API",
+      "file": "lib/traceatlas/http.ts",
+      "line": 4,
+      "end": 21,
+      "code": "export async function runTraceAtlas(request: Request, checkStorage: () => Promise<boolean>) {\n  try {\n    const body = await readJson(request, 1024);\n    if (typeof body.scenario !== \"string\" || !Object.hasOwn(scenarios, body.scenario)) {\n      throw new ApiError(422, \"Escolha um cenário disponível no TraceAtlas.\");\n    }\n    const id = crypto.randomUUID();\n    const started = performance.now();\n    let healthy = false;\n    try { healthy = await checkStorage(); } catch { /* A falha aparece na sonda, separada dos rastros simulados. */ }\n    const probe: TraceRun[\"probe\"] = {\n      status: healthy ? \"disponivel\" : \"indisponivel\",\n      durationMs: Math.round((performance.now() - started) * 10) / 10,\n    };\n    const response = json({ ...analyze(body.scenario as Scenario, id), probe });\n    response.headers.set(\"X-Request-Id\", id);\n    return response;\n  } catch (error) {"
+    },
+    {
+      "kind": "Regra",
+      "file": "lib/traceatlas/model.ts",
+      "line": 71,
+      "end": 83,
+      "code": "export function analyze(scenario: Scenario, runId: string) {\n  const traces = Array.from({ length: 9 }, (_, index) => simulateTrace(scenario, index, runId + \"-\" + (index + 1)));\n  const durations = traces.map((trace) => trace.durationMs).sort((a, b) => a - b);\n  const failures = traces.filter((trace) => trace.status === \"erro\").length;\n  return {\n    runId, scenario, traces,\n    metrics: {\n      count: traces.length, p95: durations[Math.ceil(durations.length * .95) - 1], failures,\n      recovered: traces.filter((trace) => trace.recovered).length,\n    },\n  };\n}\n"
+    },
+    {
+      "kind": "Teste",
+      "file": "tests/traceatlas.test.ts",
+      "line": 68,
+      "end": 84,
+      "code": "test(\"a sonda do TraceAtlas mede a dependência sem interferir no cenário\", async () => {\n  const call = (check: () => Promise<boolean>) => runTraceAtlas(new Request(\"https://example.test/api/traceatlas\", {\n    method: \"POST\", headers: { \"Content-Type\": \"application/json\" }, body: '{\"scenario\":\"db-fora\"}',\n  }), check);\n  const available = await call(async () => true);\n  const healthy = await available.json() as TraceRun;\n  assert.equal(available.status, 200);\n  assert.equal(available.headers.get(\"X-Request-Id\"), healthy.runId);\n  assert.equal(available.headers.get(\"Cache-Control\"), \"no-store\");\n  assert.equal(healthy.probe.status, \"disponivel\");\n  assert.ok(healthy.probe.durationMs >= 0);\n  const unavailable = await call(async () => { throw new Error(\"D1 off\"); });\n  const unhealthy = await unavailable.json() as TraceRun;\n  assert.equal(unavailable.status, 200);\n  assert.equal(unhealthy.probe.status, \"indisponivel\");\n  assert.notEqual(healthy.runId, unhealthy.runId);\n  assert.equal(healthy.metrics.failures, 6);"
+    }
+  ],
+  "radar-de-retorno": [
+    {
+      "kind": "Validação",
+      "file": "lib/return-radar.ts",
+      "line": 47,
+      "end": 64,
+      "code": "  const parsed = contract.safeParse(payload);\n  if (!parsed.success) {\n    return {\n      decision: \"Revisar\",\n      detail: \"O HTTP indica sucesso, mas o retorno não atende ao contrato deste laboratório.\",\n      fields: [...new Set(parsed.error.issues.map((issue) => issue.path.join(\".\") || \"corpo\"))],\n    };\n  }\n\n  const response = parsed.data;\n  const expectedHttp = response.estado === \"em_fila\" ? 202 : 200;\n  if (http !== expectedHttp) {\n    return {\n      decision: \"Revisar\",\n      detail: \"Neste contrato, o estado \" + response.estado + \" deve chegar com HTTP \" + expectedHttp + \".\",\n      fields: [\"estado\", \"HTTP\"],\n    };\n  }"
+    },
+    {
+      "kind": "Teste",
+      "file": "tests/return-radar.test.ts",
+      "line": 11,
+      "end": 16,
+      "code": "test(\"o Radar detecta um retorno coerente só quando HTTP e estado concordam\", () => {\n  assert.deepEqual(inspectReturn(200, '{\"estado\":\"em_fila\",\"protocolo\":\"DEMO-5\"}').fields, [\"estado\", \"HTTP\"]);\n  assert.equal(inspectReturn(202, '{\"estado\":\"em_fila\",\"protocolo\":\"DEMO-5\",\"extra\":1}').decision, \"Aguardar\");\n  assert.equal(inspectReturn(200, '{\"estado\":\"rejeitado\",\"motivo\":\" \" }').decision, \"Revisar\");\n});\n"
+    }
+  ],
+  "contractshield": [
+    {
+      "kind": "Validação",
+      "file": "lib/contractshield/contract.ts",
+      "line": 3,
+      "end": 11,
+      "code": "export const changeInput = z.strictObject({\n  service: z.enum([\"catalogo\", \"notificacoes\", \"cobranca\"]),\n  releaseWindow: z.enum([\"comercial\", \"noturna\"]),\n});\n\nexport const createSandboxInput = z.strictObject({});\nexport const idempotencyKey = z.string().regex(/^[A-Za-z0-9_-]{12,64}$/);\nexport const changeId = z.uuid();\n"
+    },
+    {
+      "kind": "API",
+      "file": "lib/contractshield/http.ts",
+      "line": 62,
+      "end": 74,
+      "code": "    if (request.method === \"GET\") {\n      const id = params.get(\"id\");\n      if (id === null) return json({ items: (await store.list(scope)).map((row) => dto(row, version)) });\n      if (!changeId.safeParse(id).success) return problem(422, \"id_invalido\", \"Informe o identificador da mudança.\");\n      const row = await store.read(scope, id);\n      return row ? json(dto(row, version)) : problem(404, \"mudanca_ausente\", \"Mudança não encontrada neste escopo.\");\n    }\n\n    if (scope.actor === \"leitor\") return problem(403, \"somente_leitura\", \"O perfil leitor só pode consultar mudanças.\");\n    const key = idempotencyKey.safeParse(request.headers.get(\"Idempotency-Key\"));\n    if (!key.success) return problem(422, \"chave_invalida\", \"Informe uma chave de idempotência válida.\");\n    const input = changeInput.safeParse(body);\n    if (!input.success) return problem(422, \"campos_invalidos\", \"Informe somente service e releaseWindow, com valores do contrato.\");"
+    },
+    {
+      "kind": "Persistência",
+      "file": "lib/contractshield/store.ts",
+      "line": 53,
+      "end": 70,
+      "code": "    async create(scope: Scope, key: string, input: ChangeInput, now: number) {\n      const row = await db.prepare(`\n        INSERT INTO contract_changes (id, sandbox_id, organization, request_key, service, release_window, created_at)\n        SELECT ?, ?, ?, ?, ?, ?, ?\n        WHERE EXISTS (SELECT 1 FROM contract_sandboxes WHERE id = ? AND expires_at > ?)\n          AND (SELECT COUNT(*) FROM contract_changes WHERE ${scopeWhere}) < ?\n        ON CONFLICT (sandbox_id, organization, request_key) DO NOTHING\n        RETURNING ${columns}\n      `).bind(crypto.randomUUID(), scope.id, scope.organization, key, input.service, input.releaseWindow, now,\n        scope.id, now, scope.id, scope.organization, changesLimit).first<StoredChange>();\n      if (row) return { row, created: true };\n      const replay = await db.prepare(`SELECT ${columns} FROM contract_changes WHERE ${scopeWhere} AND request_key = ?`)\n        .bind(scope.id, scope.organization, key).first<StoredChange>();\n      return { row: replay, created: false };\n    },\n  };\n}\n"
+    },
+    {
+      "kind": "Teste",
+      "file": "e2e/contractshield.spec.ts",
+      "line": 27,
+      "end": 48,
+      "code": "test(\"Contrato v2 e isolamento de objeto usam respostas reais\", async ({ request }) => {\n  const actors = await session(request);\n  const created = await request.post(path, {\n    data: payload, headers: { ...bearer(actors.operador), \"Idempotency-Key\": randomUUID() },\n  });\n  expect(created.status()).toBe(201);\n  const initial = await created.json();\n  expect(schemas.ChangeV1(initial)).toBe(true);\n  expect(Object.keys(initial).sort()).toEqual([\"createdAt\", \"id\", \"releaseWindow\", \"service\", \"status\"]);\n  const uri = path + \"?id=\" + initial.id;\n  const denied = await request.get(uri, { headers: bearer(actors.externo) });\n  expect(denied.status()).toBe(404);\n  expect(schemas.Problem(await denied.json())).toBe(true);\n  const empty = await request.get(path, { headers: bearer(actors.externo) });\n  expect(await empty.json()).toEqual({ items: [] });\n  const allowed = await request.get(uri + \"&version=2\", { headers: bearer(actors.leitor) });\n  expect(allowed.status()).toBe(200);\n  const body = await allowed.json();\n  expect(schemas.ChangeV1(body)).toBe(true);\n  expect(schemas.ChangeV2(body)).toBe(true);\n  expect(body).toEqual({ ...initial, revision: 1 });\n  expect((await request.get(uri)).status()).toBe(401);"
+    }
+  ]
+}

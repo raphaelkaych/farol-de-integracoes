@@ -64,6 +64,12 @@ export const projects: readonly Project[] = [
     stack: ["TypeScript", "React", "Zod"], categories: ["backend", "arquitetura"],
     demo: "/radar-de-retorno", code: siteRepository + "/blob/main/lib/return-radar.ts",
   },
+  {
+    slug: "contractshield", index: "09", name: "ContractShield", label: "API QUALITY & SECURITY",
+    summary: "Exercite autorização por objeto, versões de contrato e reenvios concorrentes em uma API real de mudanças fictícias.",
+    stack: ["TypeScript", "Zod", "D1", "OpenAPI", "Playwright"], categories: ["backend", "arquitetura"],
+    demo: "/contractshield", code: siteRepository + "/tree/main/lib/contractshield",
+  },
 ];
 
 export function findProject(slug: string) {
