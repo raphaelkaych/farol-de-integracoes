@@ -106,6 +106,33 @@ export function HomeMotion() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const main = layer.current?.closest("main");
+    if (!main || !window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)").matches) return;
+    let active: HTMLElement | null = null;
+    const clear = () => {
+      active?.removeAttribute("data-spotlight");
+      active = null;
+    };
+    const highlight = (event: PointerEvent) => {
+      const card = event.target instanceof Element ? event.target.closest<HTMLElement>(".project-card") : null;
+      if (card !== active) clear();
+      if (!card || event.pointerType === "touch") return;
+      const bounds = card.getBoundingClientRect();
+      card.style.setProperty("--spot-x", event.clientX - bounds.left + "px");
+      card.style.setProperty("--spot-y", event.clientY - bounds.top + "px");
+      card.setAttribute("data-spotlight", "");
+      active = card;
+    };
+    main.addEventListener("pointermove", highlight, { passive: true });
+    main.addEventListener("pointerleave", clear);
+    return () => {
+      main.removeEventListener("pointermove", highlight);
+      main.removeEventListener("pointerleave", clear);
+      clear();
+    };
+  }, []);
+
   return (
     <div ref={layer} className="hero-signals" aria-hidden="true">
       <div className="hero-signal-light" />

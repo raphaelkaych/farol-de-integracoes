@@ -41,14 +41,36 @@
   pointer-events: none;
 }
 .workbench-signal rect { stroke: var(--accent); stroke-width: 2; }
+.workbench-signal[data-blocked="true"] rect { stroke: var(--warning); }
 .workbench-signal path { stroke: #c2dcff; stroke-width: 2.5; stroke-linecap: round; opacity: 0; }
 
 @media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-group(root) { animation-duration: .16s; }
   html { scroll-behavior: smooth; }
   [data-entered]:not(:focus-within) { animation: enter-section .52s var(--ease) both; }
   .workbench-detail { animation: enter-section .28s var(--ease) both; }
   .workbench-tabs button { transition: background .22s var(--ease), box-shadow .22s var(--ease), color .22s; }
 }
+.workbench-caption code { color: var(--ink); font-size: .74rem; }
+.workbench-tools { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .3rem .8rem; border-top: 1px solid var(--line); padding: .5rem .85rem; }
+.workbench-tools button { border: 0; padding: 0; background: none; text-decoration: underline; }
+.workbench-tools .text-link { min-height: 36px; display: inline-flex; align-items: center; gap: .35rem; font-size: .76rem; }
+.workbench-tools [aria-pressed="true"] { color: var(--warning); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .project-card[data-spotlight] {
+    background: radial-gradient(circle at var(--spot-x) var(--spot-y), #377ffb27, transparent 13rem),
+      linear-gradient(145deg, #102444a1, #080f20 60%);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .project-card .project-preview { transition: border-color .22s var(--ease), background-color .22s var(--ease); }
+  .preview-spans i { transition: filter .22s var(--ease); }
+  .project-card:is(:hover, :focus-within) .project-preview { border-color: #5279ad; }
+  .project-card:is(:hover, :focus-within) .preview-spans i { filter: brightness(1.38); }
+  .project-card:is(:hover, :focus-within) .preview-trace > div:last-child i { animation: preview-beacon .58s var(--ease); }
+}
+@keyframes preview-beacon { from { transform: scale(.7); } to { transform: scale(1); } }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .hero-signal-light, .signal-link { transition: opacity .2s ease-out; }
   .hero-signals[data-tracking][data-following] .hero-signal-light { opacity: 1; }

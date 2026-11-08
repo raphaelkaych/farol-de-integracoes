@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Comparison } from "../lib/qualitygate/engine";
 import { scenarios, type Scenario } from "../lib/qualitygate/scenarios";
+import { useBrowserReady } from "./use-browser-ready";
 
 const repo = "https://github.com/raphaelkaych/farol-de-integracoes";
 
@@ -32,6 +33,7 @@ function Evidence({ title, result }: { title: string; result: Comparison["contro
 }
 
 export function QualityGate() {
+  const ready = useBrowserReady();
   const [scenario, setScenario] = useState<Scenario>("stock");
   const [result, setResult] = useState<Comparison>();
   const [pending, setPending] = useState(false);
@@ -57,8 +59,9 @@ export function QualityGate() {
   return (
     <>
       <section className="lab-panel" aria-labelledby="qa-scenarios">
+        <p className="eyebrow">01 / CENÁRIO</p>
         <h2 id="qa-scenarios">Cenários de teste</h2>
-        <fieldset className="scenario-options" disabled={pending}>
+        <fieldset className="scenario-options" disabled={!ready || pending}>
           <legend className="sr-only">Selecione um cenário</legend>
           {(Object.keys(scenarios) as Scenario[]).map((key, index) => (
             <label key={key} className="scenario" data-selected={scenario === key}>
@@ -73,7 +76,7 @@ export function QualityGate() {
           ))}
         </fieldset>
         <p className="lab-guide"><strong>Regra esperada</strong> {scenarios[scenario].invariant}</p>
-        <button className="button button-primary" type="button" onClick={run} disabled={pending}>
+        <button className="button button-primary" type="button" onClick={run} disabled={!ready || pending}>
           {pending ? "Executando…" : "Executar comparação"}
         </button>
         <p className="lab-feedback" role="status">
@@ -82,6 +85,7 @@ export function QualityGate() {
       </section>
       {result && (
         <section className="qa-results" aria-labelledby="qa-results-title">
+          <p className="eyebrow">02 / EXECUÇÃO</p>
           <h2 id="qa-results-title">Resultado da execução</h2>
           <p className="lab-meta">{scenarios[result.scenario].defect} Os códigos abaixo são retornos do serviço de reserva exercitado pela API.</p>
           <div className="lab-grid">
@@ -92,11 +96,24 @@ export function QualityGate() {
       )}
       <section className="lab-panel qa-proof" aria-labelledby="qa-ci">
         <div>
-          <p className="eyebrow">EVIDÊNCIA / GITHUB ACTIONS</p>
+          <p className="eyebrow">03 / EVIDÊNCIAS</p>
           <h2 id="qa-ci">Histórico e artefatos de CI</h2>
-          <p className="lab-meta">A comparação acima executa uma regra na API. O pipeline roda a suíte automatizada e publica os relatórios e o trace do cenário com falha esperada.</p>
+          {result ? (
+            <dl className="qa-assertions" aria-label="Assertivas da implementação com defeito">
+              {result.injected.assertions.map(({ label, expected, actual, passed }) => (
+                <div key={label} data-passed={passed}>
+                  <dt>{label} · {passed ? "Passou" : "Falhou"}</dt>
+                  <dd>Esperado <code>{expected}</code> · Obtido <code>{actual}</code></dd>
+                </div>
+              ))}
+            </dl>
+          ) : <p className="lab-meta">Execute um cenário para comparar os valores esperados com os obtidos.</p>}
+          <p className="lab-meta">O pipeline publica o relatório e o trace da falha esperada do cenário de permissão.</p>
         </div>
-        <a className="button button-outline" href={repo + "/actions/workflows/validar.yml"}>Ver execuções de CI ↗</a>
+        <div className="links">
+          <a className="button button-outline" href={repo + "/actions/workflows/validar.yml"}>Ver execuções de CI ↗</a>
+          <a className="text-link" href="/evidencias/qualitygate-permissao.png">Captura do teste de permissão ↗</a>
+        </div>
       </section>
     </>
   );

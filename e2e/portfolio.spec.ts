@@ -19,7 +19,7 @@ test("home, seções e navegação abrem sem erros críticos", async ({ page }) 
 
 test("filtro e estudo de caso mantêm URL e rotas funcionais", async ({ page }) => {
   await page.goto("/projetos");
-  await expect(page.getByRole("heading", { name: "8 projetos" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "9 projetos" })).toBeVisible();
   await page.getByRole("link", { name: "QA & Automation" }).click();
   await expect(page).toHaveURL(/categoria=qualidade/);
   await expect(page.getByRole("heading", { name: "1 projeto", exact: true })).toBeVisible();
@@ -124,6 +124,8 @@ test("título é legível e controles do TraceAtlas ficam desabilitados sem Java
     await page.goto("/traceatlas");
     await expect(page.getByRole("combobox", { name: "Cenário", exact: true })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Executar cenário" })).toBeDisabled();
+    await page.goto("/qualitygate");
+    await expect(page.getByRole("button", { name: "Executar comparação" })).toBeDisabled();
   } finally {
     await context.close();
   }
@@ -141,16 +143,16 @@ test("a digitação revela todas as letras e o atalho pula para o conteúdo", as
 });
 
 test("metadados, recursos e rotas legadas respondem", async ({ request }) => {
-  const pages = ["/", "/projetos", "/trajetoria", "/qualitygate", "/ledgerflow", "/farol", "/traceatlas", "/radar-de-retorno",
+  const pages = ["/", "/projetos", "/trajetoria", "/workspace", "/qualitygate", "/ledgerflow", "/farol", "/traceatlas", "/radar-de-retorno", "/contractshield",
     "/demos/plantao-ti", "/demos/ponte-erp", "/demos/pulso-operacao",
-    "/projetos/qualitygate-studio", "/projetos/ledgerflow", "/projetos/traceatlas", "/projetos/radar-de-retorno",
+    "/projetos/qualitygate-studio", "/projetos/ledgerflow", "/projetos/traceatlas", "/projetos/radar-de-retorno", "/projetos/contractshield",
     "/projetos/farol-de-integracoes", "/projetos/plantao-ti", "/projetos/ponte-erp", "/projetos/pulso-operacao"];
   for (const path of pages) {
     const response = await request.get(path);
     expect(response.status(), path).toBe(200);
     expect(await response.text()).toContain('rel="canonical"');
   }
-  for (const path of ["/robots.txt", "/sitemap.xml", "/compartilhamento.png", "/hero-diagrama.svg", "/vindex-fluxo.svg", "/api-contract.json", "/evidencias/qualitygate-permissao.png"]) {
+  for (const path of ["/robots.txt", "/sitemap.xml", "/compartilhamento.png", "/hero-diagrama.svg", "/vindex-fluxo.svg", "/api-contract.json", "/contractshield.openapi.json", "/evidencias/qualitygate-permissao.png"]) {
     expect((await request.get(path)).status(), path).toBe(200);
   }
   expect((await request.get("/projetos/projeto-inexistente")).status()).toBe(404);
@@ -158,7 +160,7 @@ test("metadados, recursos e rotas legadas respondem", async ({ request }) => {
 
 test("axe nas páginas principais e nos laboratórios", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const path of ["/", "/projetos/qualitygate-studio", "/qualitygate", "/traceatlas", "/trajetoria", "/radar-de-retorno"]) {
+  for (const path of ["/", "/projetos/qualitygate-studio", "/qualitygate", "/traceatlas", "/trajetoria", "/radar-de-retorno", "/workspace", "/contractshield", "/ledgerflow", "/farol"]) {
     await page.goto(path);
     if (path === "/traceatlas") {
       await page.getByRole("combobox", { name: "Cenário", exact: true }).selectOption("recuperacao");

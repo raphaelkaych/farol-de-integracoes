@@ -6,6 +6,7 @@ import {
   exportCsv, maxRevision, parseCsv, sampleCsv, states, statusByReference,
   type Entry, type Origin, type Role, type Status, type View,
 } from "../lib/ledgerflow/model";
+import { useBrowserReady } from "./use-browser-ready";
 
 const sessionKey = "ledgerflow-demo";
 const pageSize = 6;
@@ -13,7 +14,7 @@ const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL
 const actions: Record<string, string> = {
   importar: "Importação", conciliar: "Conciliação", criar: "Criação", atualizar: "Atualização", remover: "Remoção",
 };
-type Payload = { state?: View; token?: string; message?: string; error?: string };
+type Payload = { state?: View; token?: string; message?: string; error?: string; code?: string };
 type Editor = { id?: string; reference: string; origin: Origin; date: string; amount: string };
 
 function saveToken(value: string) {
@@ -35,6 +36,7 @@ function editValues(entry?: Entry): Editor {
 }
 
 export function LedgerFlow() {
+  const ready = useBrowserReady();
   const [view, setView] = useState<View>();
   const [token, setToken] = useState("");
   const [pending, setPending] = useState(false);
@@ -43,6 +45,7 @@ export function LedgerFlow() {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
   const [editor, setEditor] = useState<Editor>();
+  const [inspected, setInspected] = useState<string>();
   const [confirmRemove, setConfirmRemove] = useState(false);
   const busy = useRef(false);
   const editorDialog = useRef<HTMLDialogElement>(null);
@@ -57,6 +60,7 @@ export function LedgerFlow() {
     if (!saved) return;
     const controller = new AbortController();
     busy.current = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Block new actions while restoring an external browser session.
     setPending(true);
     fetch("/api/ledgerflow", { headers: { Authorization: "Bearer " + saved }, signal: controller.signal })
       .then(async (response) => {
@@ -85,10 +89,15 @@ export function LedgerFlow() {
         body: JSON.stringify(startRole ? { action: "iniciar", role: startRole } : { ...body, version: view?.revision }),
       });
       const result = await response.json() as Payload;
+      if (result.code === "sessao_ausente") {
+        setView(undefined); setToken(""); saveToken(""); setEditor(undefined); setInspected(undefined);
+        setMessage(result.error ?? "Abra uma nova sessão.");
+        return false;
+      }
       if (result.state) setView(result.state);
       if (result.token) {
         setToken(result.token); saveToken(result.token);
-        setEditor(undefined); setQuery(""); setFilter("todos"); setPage(0); setConfirmRemove(false);
+        setEditor(undefined); setInspected(undefined); setQuery(""); setFilter("todos"); setPage(0); setConfirmRemove(false);
       }
       setMessage(result.error ?? result.message ?? "Sessão aberta.");
       return response.ok;
@@ -141,6 +150,7 @@ export function LedgerFlow() {
   const editable = view?.role === "analista" && view.revision < maxRevision;
   const counts = (state: Status) => [...status.values()].filter((value) => value === state).length;
   const distribution = (Object.keys(states) as Status[]).map((state) => ({ state, count: counts(state) }));
+  const related = inspected ? (view?.entries ?? []).filter((entry) => entry.reference === inspected) : [];
 
   return (
     <>
@@ -151,8 +161,8 @@ export function LedgerFlow() {
           <p className="lab-meta">Dados fictícios e acesso por duas horas. Cada perfil abre uma sessão isolada.</p>
         </div>
         <div className="links">
-          <button className="button button-primary" disabled={pending} onClick={() => void request({}, "analista")}>Entrar como analista</button>
-          <button className="button button-outline" disabled={pending} onClick={() => void request({}, "leitor")}>Entrar como leitor</button>
+          <button className="button button-primary" disabled={!ready || pending} onClick={() => void request({}, "analista")}>Entrar como analista</button>
+          <button className="button button-outline" disabled={!ready || pending} onClick={() => void request({}, "leitor")}>Entrar como leitor</button>
         </div>
       </div>
       <p className="lab-feedback" role="status">{pending ? "Consultando a API…" : message}</p>
@@ -232,7 +242,8 @@ export function LedgerFlow() {
                 <tbody>
                   {visible.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map((entry) => {
                     const value = status.get(entry.reference) ?? "pendente";
-                    return <tr key={entry.id}><td><strong>{entry.reference}</strong><br /><code>{entry.id}</code></td>
+                    return <tr key={entry.id}><td><button type="button" className="text-link ledger-inspect" aria-pressed={inspected === entry.reference}
+                      aria-label={"Inspecionar " + entry.reference} onClick={() => setInspected(entry.reference)}>{entry.reference}</button><br /><code>{entry.id}</code></td>
                       <td>{entry.origin}</td><td>{entry.date}</td><td>{money.format(entry.cents / 100)}</td>
                       <td><span className="pill" data-status={value}>{states[value]}</span></td>
                       {editable && <td>{entry.manual ? <button className="button button-compact button-outline" disabled={pending} aria-label={"Editar " + entry.id} onClick={() => { setEditor(editValues(entry)); setConfirmRemove(false); }}>Editar</button> : "—"}</td>}
@@ -242,6 +253,16 @@ export function LedgerFlow() {
               </table>
             </div>
             {!visible.length && <p className="lab-meta">Nenhum lançamento corresponde ao recorte.</p>}
+            {inspected && related.length > 0 && (
+              <section className="lab-guide ledger-inspection" aria-label={"Comparação de " + inspected}>
+                <div className="panel-heading">
+                  <strong>{inspected} · {states[status.get(inspected) ?? "pendente"]}</strong>
+                  <button className="button button-compact button-outline" onClick={() => setInspected(undefined)}>Fechar comparação</button>
+                </div>
+                <ul>{related.map((entry) => <li key={entry.id}>{entry.origin} · {entry.date} · {money.format(entry.cents / 100)} <code>{entry.id}</code></li>)}</ul>
+                {related.length === 2 && related[0].origin !== related[1].origin && <p>Diferença de valor <strong>{money.format(Math.abs(related[0].cents - related[1].cents) / 100)}</strong></p>}
+              </section>
+            )}
             <div className="ledger-pagination">
               <button className="button button-compact button-outline" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>Anterior</button>
               <span>Página {currentPage + 1} de {pages}</span>

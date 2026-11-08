@@ -10,9 +10,18 @@ const eslintConfig = defineConfig([
     ".vinext/**",
     ".wrangler/**",
     ".sites-runtime/**",
+    "playwright-report/**",
+    "test-results/**",
     "outputs/**",
     "work/**",
   ]),
+  {
+    files: ["app/**/*.tsx", "components/**/*.tsx"],
+    rules: {
+      // Full document navigation enables the portfolio's native cross-page transitions.
+      "@next/next/no-html-link-for-pages": "off",
+    },
+  },
   {
     files: ["components/ui/**/*.{ts,tsx}", "hooks/use-mobile.ts"],
     rules: {

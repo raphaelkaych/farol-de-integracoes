@@ -2,7 +2,7 @@
 
 [Demo pública](https://raphael-kaych.raphaelvindex.chatgpt.site/qualitygate) · [Estudo de caso](https://raphael-kaych.raphaelvindex.chatgpt.site/projetos/qualitygate-studio) · [Execuções de CI](https://github.com/raphaelkaych/farol-de-integracoes/actions/workflows/validar.yml)
 
-O serviço de reserva recebe um pedido, verifica permissão e saldo, e retorna o recibo de uma reserva já existente quando a operação é reenviada. A plataforma executa a mesma entrada em duas instâncias em memória e verifica a regra a partir dos códigos, do saldo e dos recibos produzidos.
+O serviço de reserva recebe um pedido, verifica permissão e saldo, e retorna o recibo de uma reserva já existente quando a operação é reenviada. A plataforma executa a mesma entrada em duas instâncias em memória. Para cada assertiva, a interface exibe o esperado e o obtido nos códigos, no saldo e nos recibos produzidos.
 
 | Cenário | Regra da implementação de referência | Resultado do defeito injetado |
 | --- | --- | --- |

@@ -26,7 +26,7 @@ export async function readJson(request: Request, maxBytes: number): Promise<Reco
       if (done) break;
       size += value.length;
       if (size > maxBytes) {
-        await reader.cancel();
+        await reader.cancel().catch(() => {});
         throw new ApiError(413, "O corpo da solicitação excede " + maxBytes / 1024 + " KiB.");
       }
       text += decoder.decode(value, { stream: true });

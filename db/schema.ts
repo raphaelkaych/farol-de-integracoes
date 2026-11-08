@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { check, index, integer, primaryKey, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 export const runs = sqliteTable("farol_runs", {
   id: text().primaryKey().notNull(),
@@ -44,4 +44,30 @@ export const ledgerAudit = sqliteTable("ledger_audit", {
   recordedAt: integer("recorded_at").notNull(),
 }, (table) => [
   primaryKey({ columns: [table.sessionId, table.rev] }),
+]);
+
+export const contractSandboxes = sqliteTable("contract_sandboxes", {
+  id: text().primaryKey().notNull(),
+  operatorHash: text("operator_hash").notNull(),
+  readerHash: text("reader_hash").notNull(),
+  outsiderHash: text("outsider_hash").notNull(),
+  expiresAt: integer("expires_at").notNull(),
+  bucket: integer().notNull().default(0),
+  used: integer().notNull().default(0),
+}, (table) => [index("contract_sandboxes_expires_idx").on(table.expiresAt)]);
+
+export const contractChanges = sqliteTable("contract_changes", {
+  id: text().primaryKey().notNull(),
+  sandboxId: text("sandbox_id").notNull().references(() => contractSandboxes.id, { onDelete: "cascade" }),
+  organization: text({ enum: ["aurora", "orbita"] }).notNull(),
+  requestKey: text("request_key").notNull(),
+  service: text({ enum: ["catalogo", "notificacoes", "cobranca"] }).notNull(),
+  releaseWindow: text("release_window", { enum: ["comercial", "noturna"] }).notNull(),
+  createdAt: integer("created_at").notNull(),
+}, (table) => [
+  unique("contract_request_unique").on(table.sandboxId, table.organization, table.requestKey),
+  check("contract_organization", sql`${table.organization} IN ('aurora','orbita')`),
+  check("contract_service", sql`${table.service} IN ('catalogo','notificacoes','cobranca')`),
+  check("contract_window", sql`${table.releaseWindow} IN ('comercial','noturna')`),
+  check("contract_billing_window", sql`${table.service} <> 'cobranca' OR ${table.releaseWindow} = 'noturna'`),
 ]);

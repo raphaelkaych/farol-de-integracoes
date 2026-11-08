@@ -855,6 +855,10 @@
         "properties": {
           "error": {
             "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "Código opcional para tratamento programático."
           }
         },
         "required": [
@@ -967,6 +971,32 @@
               },
               "conforms": {
                 "type": "boolean"
+              },
+              "assertions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "label",
+                    "expected",
+                    "actual",
+                    "passed"
+                  ],
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "expected": {
+                      "type": "string"
+                    },
+                    "actual": {
+                      "type": "string"
+                    },
+                    "passed": {
+                      "type": "boolean"
+                    }
+                  }
+                }
               }
             },
             "required": [
@@ -1043,6 +1073,32 @@
               },
               "conforms": {
                 "type": "boolean"
+              },
+              "assertions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "label",
+                    "expected",
+                    "actual",
+                    "passed"
+                  ],
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "expected": {
+                      "type": "string"
+                    },
+                    "actual": {
+                      "type": "string"
+                    },
+                    "passed": {
+                      "type": "boolean"
+                    }
+                  }
+                }
               }
             },
             "required": [

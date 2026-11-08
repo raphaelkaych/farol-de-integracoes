@@ -19,7 +19,7 @@ export async function ledgerRequest(request: Request, store: LedgerStore, now = 
     if (!auth) throw new ApiError(401, "Abra uma sessão da demonstração.");
     const key = { id: auth.id, hash: await secretDigest(auth.secret), now };
     const state = await store.get(key);
-    if (!state) throw new ApiError(404, "Sessão ausente ou expirada. Abra uma nova sessão.");
+    if (!state) return json({ code: "sessao_ausente", error: "Sessão ausente ou expirada. Abra uma nova sessão." }, 404);
     if (!input) return json({ state });
     if (state.role !== "analista") throw new ApiError(403, "O perfil leitor tem acesso apenas à consulta.");
     if (typeof input.action !== "string" || !Number.isSafeInteger(input.version) || Number(input.version) < 0) {
@@ -30,7 +30,7 @@ export async function ledgerRequest(request: Request, store: LedgerStore, now = 
     const next = mutate({ entries: state.entries, reconciled: state.reconciled }, input, state.revision);
     const changed = await store.write(key, state.revision, next.ledger, input.action, next.detail);
     const current = await store.get(key);
-    if (!current) throw new ApiError(404, "Sessão ausente ou expirada. Abra uma nova sessão.");
+    if (!current) return json({ code: "sessao_ausente", error: "Sessão ausente ou expirada. Abra uma nova sessão." }, 404);
     if (!changed) return json({ state: current, error: "Uma ação concorrente chegou primeiro. A tela foi atualizada." }, 409);
     return json({ state: current, message: next.detail });
   } catch (error) {
