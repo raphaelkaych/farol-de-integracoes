@@ -5,6 +5,7 @@ A base auditada foi a versão 5 do Sites e o commit público `8d160b0`. As 20 ro
 | Prioridade | Evidência | Ação |
 | --- | --- | --- |
 | P0 | Dependências com avisos críticos e altos. | Atualizar versões e travar a auditoria de produção no CI. |
+| P0 | A revisão do bundle encontrou o runtime de React Server Components empacotado a partir de ferramentas listadas em desenvolvimento. | Atualizar React e o runtime RSC para 19.3.1, o plugin RSC para 0.5.39, Vinext para 1.4.4 e Vite para 8.3.6. |
 | P1 | O QualityGate podia habilitar controles antes da hidratação. A comparação mostrava o resultado agregado. | Aguardar a interface pronta e explicar cada assertiva com esperado e obtido. |
 | P1 | A mutação do LedgerFlow podia manter uma sessão inválida na tela. A referência divergente exigia busca manual pela contraparte. | Reiniciar a sessão com mensagem própria e exibir as duas origens da referência. |
 | P1 | O TraceAtlas mantinha o lote anterior após falha. A seleção não permitia buscar o ID ou recortar um serviço. | Limpar o lote na nova execução, filtrar e destacar a etapa mais demorada sem suboperações. |
@@ -12,6 +13,8 @@ A base auditada foi a versão 5 do Sites e o commit público `8d160b0`. As 20 ro
 | P2 | Ações por tag e ausência de referências visuais no pipeline. | Fixar SHAs e comparar capturas de componentes críticos no runner Ubuntu 24.04. |
 | P2 | Repositórios públicos com licença sem declaração. | Registrar a decisão de licenciamento para cada artefato antes de uma distribuição como biblioteca. |
 | P3 | Entrega progressiva, avaliação de IA e biblioteca reutilizável. | Ordenar no backlog pelos problemas que cada projeto resolve. |
+
+O filtro `npm audit --omit=dev` cobre a árvore de produção do npm. O build também empacota código de ferramentas como Vinext e o plugin RSC. A revisão dessas versões seguiu os avisos dos mantenedores e foi acompanhada de um novo build e da suíte completa. [React RSC](https://github.com/react/react/security/advisories/GHSA-xqc2-xf4c-x3h3) · [Plugin RSC do Vite](https://github.com/vitejs/vite-plugin-react/security/advisories/GHSA-59pf-q495-3c99) · [Vinext](https://github.com/cloudflare/vinext/security/advisories/GHSA-8969-277p-8rrm)
 
 ## Organização dos repositórios
 
