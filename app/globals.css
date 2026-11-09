@@ -31,6 +31,13 @@
   --mono: "JetBrains Mono", Consolas, monospace;
   --radius: 16px;
   --ease: cubic-bezier(.22, .7, .2, 1);
+  --motion-ease: cubic-bezier(.22, .7, .2, 1);
+  --motion-micro: 200ms;
+  --motion-content: 320ms;
+  --motion-reveal: 560ms;
+  --motion-ambient: 12s;
+  --motion-distance: 8px;
+  --motion-stagger: 70ms;
   --header: 68px;
 }
 * { box-sizing: border-box; }
@@ -82,7 +89,7 @@ code, kbd { font-family: var(--mono); }
 .hero-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; }
 .hero-kicker i { width: 1.6rem; height: 1px; background: var(--accent); }
 .hero-kicker > span { color: var(--quiet); }
-.hero-title { margin-block: .42em .4em; font-size: clamp(2.9rem, 5.25vw, 5.25rem); font-weight: 660; line-height: .99; letter-spacing: -.072em; }
+.hero-title { margin-block: .42em .4em; font-size: clamp(2.9rem, 4.6vw, 4.4rem); font-weight: 660; line-height: 1.04; letter-spacing: -.068em; }
 .type-line { display: block; position: relative; width: fit-content; max-width: 100%; }
 .type-line-1 { color: var(--accent); }
 .type-text { display: inline-block; }
@@ -130,13 +137,14 @@ code, kbd { font-family: var(--mono); }
 @media (prefers-reduced-motion: no-preference) {
   .type-text { animation: type-reveal .37s steps(var(--steps), end) var(--delay) backwards; }
   .type-line::after { content: ""; position: absolute; top: .13em; height: .81em; left: 0; width: 2px; background: var(--accent); opacity: 0; animation: type-cursor .37s steps(var(--steps), end) var(--delay); }
-  .hero-kicker { animation: settle-in .46s var(--ease) both; }
-  .hero-lead, .hero-note { animation: settle-in .44s var(--ease) .44s both; }
-  .hero-actions { animation: settle-in .42s var(--ease) .55s both; }
-  .hero .workbench { animation: settle-in .56s var(--ease) .17s both; }
+  .hero-kicker { animation: settle-in var(--motion-reveal) var(--motion-ease) both; }
+  .hero-lead { animation: settle-in var(--motion-reveal) var(--motion-ease) .14s both; }
+  .hero-note { animation: settle-in var(--motion-reveal) var(--motion-ease) .21s both; }
+  .hero-actions { animation: settle-in var(--motion-reveal) var(--motion-ease) .28s both; }
+  .hero .workbench { animation: settle-in var(--motion-reveal) var(--motion-ease) .14s both; }
   @keyframes type-reveal { from { clip-path: inset(-.2em 100% -.2em 0); } to { clip-path: inset(-.2em -.1em -.2em 0); } }
   @keyframes type-cursor { from { opacity: 1; left: 0; } to { opacity: 1; left: 100%; } }
-  @keyframes settle-in { from { opacity: .12; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  @keyframes settle-in { from { opacity: .65; transform: translateY(var(--motion-distance)); } to { opacity: 1; transform: none; } }
   .button:not(:disabled):hover { transform: translateY(-1px); }
 }
 @media (prefers-reduced-motion: reduce) {

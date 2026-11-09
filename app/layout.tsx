@@ -5,6 +5,8 @@ import "./globals.css";
 import "./portfolio.css";
 import "./labs.css";
 import "./motion.css";
+import "./workbench.css";
+import "./project-previews.css";
 
 const description = "Portfólio de Raphael Kaych. Projetos de desenvolvimento full stack, APIs, testes e integração de sistemas, com demos e código público.";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent, MouseEvent, ReactNode } from "react";
 import { github, siteRepository } from "../lib/portfolio-meta";
 import type { Panel, WorkspaceProject } from "../lib/workspace-projects";
@@ -27,8 +27,8 @@ function CodeExplorer({ snippets }: { snippets: Excerpt[] }) {
       </div>
       <figure className="code-sample ws-code">
         <figcaption><span>{file.file}</span><a href={sourceUrl(file)}>Abrir linhas no GitHub ↗</a></figcaption>
-        <pre tabIndex={0} aria-label="Código do repositório"><code>{file.code.split("\n").map((line, index) =>
-          <span className="ws-code-line" key={index}><i aria-hidden="true">{file.line + index}</i>{line}{"\n"}</span>)}</code></pre>
+        <pre key={file.file + file.line} tabIndex={0} aria-label="Código do repositório"><code>{file.code.split("\n").map((line, index) =>
+          <span className="ws-code-line" data-keyword={/^\s*(export|return|if|const|async|function)\b/.test(line)} key={index}><i aria-hidden="true">{file.line + index}</i>{line || " "}{"\n"}</span>)}</code></pre>
       </figure>
     </>
   );
@@ -51,7 +51,7 @@ function Architecture({ entry }: { entry: WorkspaceProject }) {
           </button>
         </li>)}
       </ol>
-      <section className="ws-inspector" aria-labelledby="ws-node-title">
+      <section className="ws-inspector" key={selected} aria-labelledby="ws-node-title">
         <h3 id="ws-node-title">{stage.title}</h3><p>{stage.text}</p>
         <dl>
           <div><dt>Entrada</dt><dd>{node.input}</dd></div>
@@ -71,7 +71,13 @@ type Command = typeof commands[number];
 function Terminal({ entry, onPanel }: { entry: WorkspaceProject; onPanel: (panel: Panel) => void }) {
   const ready = useBrowserReady();
   const [command, setCommand] = useState("");
-  const [history, setHistory] = useState<{ command: string; output: ReactNode }[]>([]);
+  const [history, setHistory] = useState<{ id: number; command: string; output: ReactNode }[]>([]);
+  const log = useRef<HTMLDivElement>(null);
+  const count = useRef(0);
+  useEffect(() => {
+    const element = log.current;
+    if (element) element.scrollTop = element.scrollHeight;
+  }, [history]);
 
   function run(value: string) {
     const action = value.trim().toLowerCase();
@@ -88,7 +94,8 @@ function Terminal({ entry, onPanel }: { entry: WorkspaceProject; onPanel: (panel
     const output = Object.hasOwn(outputs, action) ? outputs[action as Command] : "Comando desconhecido. Digite help para ver a lista.";
     if (action === "architecture") onPanel("arquitetura");
     if (action === "tests") onPanel("testes");
-    setHistory((previous) => [...previous.slice(-5), { command: action, output }]);
+    const id = ++count.current;
+    setHistory((previous) => [...previous.slice(-5), { id, command: action, output }]);
     setCommand("");
   }
 
@@ -100,9 +107,9 @@ function Terminal({ entry, onPanel }: { entry: WorkspaceProject; onPanel: (panel
   return (
     <section className="ws-terminal" aria-labelledby="ws-terminal-title">
       <header><h2 id="ws-terminal-title">Terminal demonstrativo</h2><span>COMANDOS DA INTERFACE</span></header>
-      <div className="ws-log" aria-live="polite">
-        {history.length ? history.map((item, index) => (
-          <div key={index}><code>$ {item.command}</code><p>{item.output}</p></div>
+      <div className="ws-log" ref={log} role="log" aria-label="Respostas do terminal" aria-live="polite" aria-relevant="additions" tabIndex={0}>
+        {history.length ? history.map((item) => (
+          <div key={item.id}><code>$ {item.command}</code><p>{item.output}</p></div>
         )) : <p>Use <code>help</code> para listar comandos ou abra um painel pelos atalhos.</p>}
       </div>
       <div className="ws-options" role="group" aria-label="Atalhos do terminal">
