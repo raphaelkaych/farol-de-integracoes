@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 type Frame = { stage: string | null; path: string | null; selected: string | null };
-type TracedWindow = Window & { motionFrames: Frame[] };
+type TracedWindow = typeof window & { motionFrames?: Frame[] };
 
 async function observeSequence(page: Page) {
   // Record DOM transitions as they happen. Polling can skip a short phase on a busy host.
@@ -19,7 +19,7 @@ async function observeSequence(page: Page) {
 }
 
 async function recordedFrames(page: Page) {
-  return page.evaluate(() => (window as TracedWindow).motionFrames);
+  return page.evaluate(() => (window as TracedWindow).motionFrames ?? []);
 }
 
 test("o mapa percorre o fluxo e preserva o foco até o resultado", async ({ page }) => {
