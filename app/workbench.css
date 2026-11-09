@@ -24,6 +24,7 @@
 .wb-port { fill: #0c192b; stroke: #688bb2; stroke-width: 1.2; }
 .wb-check { opacity: 0; stroke: var(--success); }
 .wb-packet, .wb-ambient-packet { fill: none; stroke: #c2e2ff; stroke-linecap: round; stroke-width: 3; stroke-dasharray: .11 1; opacity: 0; }
+.wb-ambient-packet { fill: #c2e2ff; stroke: none; }
 .workbench[data-error="true"] .wb-packet { stroke: var(--warning); }
 .workbench[data-error="true"] .wb-return-label { fill: var(--warning); }
 .wb-playback { padding: .7rem .9rem .3rem; background: linear-gradient(180deg, #0c1a2b, #091222); border-top: 1px solid #2a426188; }
@@ -85,7 +86,7 @@
 }
 @keyframes wb-orbit { to { transform: rotate(360deg); } }
 @keyframes wb-breathe { from { opacity: .35; } to { opacity: 1; } }
-@keyframes wb-idle { 0%, 20% { opacity: 0; stroke-dashoffset: .15; } 25% { opacity: .6; } 37%, 100% { opacity: 0; stroke-dashoffset: -1; } }
+@keyframes wb-idle { 0%, 20% { opacity: 0; transform: translateX(0); } 25% { opacity: .6; } 37%, 100% { opacity: 0; transform: translateX(80px); } }
 @keyframes wb-travel { 0% { opacity: 0; stroke-dashoffset: .15; } 15%, 85% { opacity: 1; } 100% { opacity: 0; stroke-dashoffset: -1; } }
 @keyframes wb-validate { 0%, 100% { opacity: .1; } 50% { opacity: .23; } }
 @keyframes wb-store { 0%, 100% { opacity: 1; } 35% { opacity: .4; } }

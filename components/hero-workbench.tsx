@@ -137,7 +137,7 @@ export function HeroWorkbench() {
             <text className="wb-node-note" x="60" y="94" textAnchor="middle">{["preparar", "validar", "persistir"][index]}</text>
             <circle className="wb-port" cx="120" cy="56" r="3" />
           </g>)}
-          <path className="wb-ambient-packet" d={paths.outbound} pathLength="1" />
+          <circle className="wb-ambient-packet" cx="160" cy="132" r="2.2" />
           {running && step.path && <path key={play.run + "/" + step.id} className="wb-packet" d={step.path} pathLength="1" />}
           <text className="wb-return-label" x="300" y="253" textAnchor="middle">{hasError ? "SEM ESCRITA · ESTADO PRESERVADO" : "REQUISIÇÃO → RESPOSTA"}</text>
         </svg>
