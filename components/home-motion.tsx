@@ -29,6 +29,8 @@ export function HomeMotion() {
     const dot = linkedNode.current;
     const hero = field?.parentElement;
     if (!field || !svg || !line || !dot || !hero) return;
+    const workbench = hero.querySelector<HTMLElement>(".workbench");
+    const art = hero.querySelector<HTMLElement>(".workbench-art");
 
     const input = window.matchMedia("(min-width: 786px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
     let frame = 0;
@@ -44,12 +46,18 @@ export function HomeMotion() {
 
     const move = (event: PointerEvent) => {
       if (event.pointerType === "touch") return;
+      if (workbench?.dataset.ambient !== "running" || document.hidden) { clear(); return; }
       mouseX = event.clientX;
       mouseY = event.clientY;
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         frame = 0;
         const bounds = field.getBoundingClientRect();
+        if (art) {
+          const visual = art.getBoundingClientRect();
+          art.style.setProperty("--wb-x", Math.max(0, Math.min(100, (mouseX - visual.left) / visual.width * 100)) + "%");
+          art.style.setProperty("--wb-y", Math.max(0, Math.min(100, (mouseY - visual.top) / visual.height * 100)) + "%");
+        }
         const matrix = svg.getScreenCTM();
         if (!matrix) return;
         field.style.setProperty("--signal-x", mouseX - bounds.left + "px");
@@ -108,9 +116,13 @@ export function HomeMotion() {
 
   useEffect(() => {
     const main = layer.current?.closest("main");
-    if (!main || !window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)").matches) return;
+    if (!main) return;
+    const input = window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
     let active: HTMLElement | null = null;
+    let frame = 0;
     const clear = () => {
+      window.cancelAnimationFrame(frame);
+      frame = 0;
       active?.removeAttribute("data-spotlight");
       active = null;
     };
@@ -118,15 +130,29 @@ export function HomeMotion() {
       const card = event.target instanceof Element ? event.target.closest<HTMLElement>(".project-card") : null;
       if (card !== active) clear();
       if (!card || event.pointerType === "touch") return;
-      const bounds = card.getBoundingClientRect();
-      card.style.setProperty("--spot-x", event.clientX - bounds.left + "px");
-      card.style.setProperty("--spot-y", event.clientY - bounds.top + "px");
-      card.setAttribute("data-spotlight", "");
       active = card;
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const bounds = card.getBoundingClientRect();
+        card.style.setProperty("--spot-x", event.clientX - bounds.left + "px");
+        card.style.setProperty("--spot-y", event.clientY - bounds.top + "px");
+        card.setAttribute("data-spotlight", "");
+      });
     };
-    main.addEventListener("pointermove", highlight, { passive: true });
-    main.addEventListener("pointerleave", clear);
+    const sync = () => {
+      main.removeEventListener("pointermove", highlight);
+      main.removeEventListener("pointerleave", clear);
+      clear();
+      if (input.matches) {
+        main.addEventListener("pointermove", highlight, { passive: true });
+        main.addEventListener("pointerleave", clear);
+      }
+    };
+    sync();
+    input.addEventListener("change", sync);
     return () => {
+      input.removeEventListener("change", sync);
       main.removeEventListener("pointermove", highlight);
       main.removeEventListener("pointerleave", clear);
       clear();
