@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "Raphael Kaych | Software e qualidade", description, locale: "pt_BR", type: "website",
-    images: [{ url: "/compartilhamento.png", width: 1200, height: 630, alt: "Raphael Kaych, desenvolvimento de software e qualidade" }],
+    images: [{ url: "/compartilhamento.png", width: 1200, height: 630, alt: "Raphael Kaych. Software que passa pelo teste: uma requisição atravessa interface, API e dados, com respostas 201 e 403." }],
   },
   twitter: { card: "summary_large_image", title: "Raphael Kaych | Software e qualidade", description, images: ["/compartilhamento.png"] },
 };

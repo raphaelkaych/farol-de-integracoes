@@ -52,7 +52,11 @@ O LCP local fica acima de 2,5 s com qualquer versão. O servidor local responde 
 
 ## Validação
 
-`npm run lint`, `npm run typecheck`, `npm test`, `node scripts/workspace-evidence.mjs --check`, `npm run build` e `npm run test:e2e` passam localmente. As capturas de `e2e/visual.spec.ts` da abertura e do Workspace mudaram de propósito e precisam ser regeneradas a partir do artefato do CI no Linux, depois de revisar a diferença.
+`npm run lint`, `npm run typecheck`, `npm test`, `node scripts/workspace-evidence.mjs --check`, `npm run build` e `npm run test:e2e` passam localmente e no CI. As capturas de `e2e/visual.spec.ts` mudaram de propósito e foram substituídas pelas do artefato do CI no Linux, depois de revisadas.
+
+- **Outro motor**: smoke test em WebKit 27.2, em 1280 e 390 px, sem erros de página nem rolagem horizontal. A bancada chega ao 403, o Workspace abre por URL profunda e o filtro do catálogo funciona. O Firefox não pôde ser executado nesta máquina, porque o Controle Inteligente de Aplicativos do Windows bloqueia o binário do Playwright.
+- **Zoom e telas estreitas**: as 22 rotas do sitemap e a 404 ficam sem rolagem horizontal em 360 px e em 640 px, o equivalente a 200% de zoom numa tela de 1280 px.
+- **Compartilhamento**: `compartilhamento.svg`, o PNG gerado a partir dele e o favicon seguem a nova linguagem.
 
 ## Publicação e reversão no Sites
 
