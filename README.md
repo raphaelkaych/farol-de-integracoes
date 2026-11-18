@@ -47,6 +47,7 @@ Os trechos do Workspace são extraídos do código com `node scripts/workspace-e
 - [Auditoria da versão anterior](docs/auditoria.md)
 - [Auditoria e decisões da Missão 2.0](docs/missao-2.md)
 - [Arquitetura, design e deploy](docs/arquitetura-portfolio.md)
+- [Transferência para o Claude Code e fluxo de publicação](docs/transferencia-claude-code.md)
 - [Pesquisa de mercado e referências](docs/mercado-e-referencias.md)
 - [Contrato OpenAPI](public/api-contract.json)
 - [OpenAPI do ContractShield](public/contractshield.openapi.json)
