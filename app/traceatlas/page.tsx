@@ -8,7 +8,7 @@ export default function TraceAtlasPage() {
     <main id="conteudo" tabIndex={-1} className="shell lab">
       <a className="back-link" href="/projetos/traceatlas">← Estudo de caso</a>
       <div className="lab-title">
-        <p className="eyebrow"><span /> OBSERVABILIDADE / LAB 04</p>
+        <p className="eyebrow">Observabilidade</p>
         <h1>TraceAtlas</h1>
         <p>Investigue nove pedidos por execução. Escolha uma falha e acompanhe o rastro até o serviço que interrompeu ou atrasou o fluxo.</p>
       </div>

@@ -4,8 +4,8 @@ O portfólio é servido por um Worker no Sites. A interface usa React com App Ro
 
 | Camada | Caminhos |
 | --- | --- |
-| Conteúdo público | `app/`, `lib/project-index.ts`, `lib/project-cases.ts` |
-| Design | `app/globals.css`, `app/portfolio.css`, `app/labs.css`, fontes WOFF2 locais |
+| Conteúdo público | `app/`, `lib/project-index.ts`, `lib/project-cases.ts`, `lib/project-evidence.ts` |
+| Design | `app/globals.css` (tokens), `app/home.css` (abertura e bancada), `app/portfolio.css`, `app/labs.css`, fontes WOFF2 locais |
 | Developer Workspace | `app/workspace`, `components/workspace-explorer.tsx`, `lib/workspace-projects.ts` |
 | QualityGate Studio | `app/qualitygate`, `app/api/qualitygate`, `lib/qualitygate` |
 | ContractShield | `app/contractshield`, `app/api/contractshield`, `lib/contractshield`, migração `0002` |

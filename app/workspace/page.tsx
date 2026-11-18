@@ -15,8 +15,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
     <main id="conteudo" tabIndex={-1} className="shell inner-page workspace-page">
       <a className="back-link" href="/">← Portfólio</a>
       <header className="page-intro workspace-intro">
-        <p className="eyebrow"><span /> RK / BANCADA DE ENGENHARIA</p>
-        <h1>Developer Workspace</h1>
+                <h1>Developer Workspace</h1>
         <p>Escolha um projeto e siga da arquitetura ao código e às evidências de teste.</p>
       </header>
       <WorkspaceExplorer entries={projects} panels={panels} initialSlug={slug} initialPanel={panel} />

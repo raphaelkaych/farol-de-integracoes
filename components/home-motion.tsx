@@ -102,15 +102,56 @@ export function HomeMotion() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
-    const targets = layer.current?.closest("main")?.querySelectorAll("[data-enter]");
+    const main = layer.current?.closest("main");
+    // Mark elements once, when they first enter. Content is already rendered; CSS only adds the arrival.
+    const targets = main?.querySelectorAll("[data-enter]");
     const observer = new IntersectionObserver((entries) => {
       for (const { target, isIntersecting } of entries) {
         if (!isIntersecting) continue;
         target.setAttribute("data-entered", "");
         observer.unobserve(target);
       }
-    }, { rootMargin: "0px 0px -48px" });
+    }, { rootMargin: "0px 0px -12%" });
     targets?.forEach((element) => observer.observe(element));
+
+    // Count real numbers up from zero the first time they are seen. Server HTML already holds the final value.
+    const counters = main?.querySelectorAll<HTMLElement>("[data-count]");
+    const frames = new Set<number>();
+    const counting = new IntersectionObserver((entries) => {
+      for (const { target, isIntersecting } of entries) {
+        if (!isIntersecting) continue;
+        counting.unobserve(target);
+        const element = target as HTMLElement;
+        const end = Number(element.dataset.count);
+        if (!end) continue;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const progress = Math.min(1, (now - start) / 1100);
+          element.textContent = String(Math.round(end * (1 - (1 - progress) ** 3)));
+          if (progress < 1) frames.add(requestAnimationFrame(tick));
+        };
+        element.textContent = "0";
+        frames.add(requestAnimationFrame(tick));
+      }
+    }, { threshold: .6 });
+    counters?.forEach((element) => counting.observe(element));
+    return () => {
+      observer.disconnect();
+      counting.disconnect();
+      frames.forEach((frame) => cancelAnimationFrame(frame));
+      counters?.forEach((element) => { element.textContent = element.dataset.count ?? element.textContent; });
+    };
+  }, []);
+
+  useEffect(() => {
+    // Mirror the bench's ambient state on the hero so the aura pauses with it (no :has() invalidation).
+    const hero = layer.current?.parentElement;
+    const bench = hero?.querySelector<HTMLElement>(".workbench");
+    if (!hero || !bench) return;
+    const sync = () => hero.setAttribute("data-ambient", bench.getAttribute("data-ambient") ?? "paused");
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(bench, { attributes: true, attributeFilter: ["data-ambient"] });
     return () => observer.disconnect();
   }, []);
 
@@ -161,6 +202,8 @@ export function HomeMotion() {
 
   return (
     <div ref={layer} className="hero-signals" aria-hidden="true">
+      <div className="hero-aura hero-aura-a" />
+      <div className="hero-aura hero-aura-b" />
       <div className="hero-signal-light" />
       <svg ref={mesh} viewBox="0 0 1440 720" preserveAspectRatio="xMidYMid slice" focusable="false">
         <g className="signal-wires">{wires.map((points) => <polyline key={points} points={points} />)}</g>

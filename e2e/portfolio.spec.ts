@@ -9,7 +9,7 @@ test("home, seções e navegação abrem sem erros críticos", async ({ page }) 
   await expect(page.getByRole("heading", { name: "Software que passa pelo teste." })).toBeVisible();
   await page.getByRole("button", { name: "API", exact: true }).click();
   await expect(page.getByRole("link", { name: "Ver projeto da camada API" })).toHaveAttribute("href", "/projetos/ledgerflow");
-  await page.getByRole("link", { name: "Explorar projetos" }).click();
+  await page.getByRole("link", { name: "Ver projetos", exact: true }).click();
   await expect(page).toHaveURL(/#projetos$/);
   await page.getByRole("navigation", { name: "Navegação principal" }).getByRole("link", { name: "Engenharia" }).click();
   await expect(page).toHaveURL(/#engenharia$/);
@@ -120,7 +120,7 @@ test("título é legível e controles do TraceAtlas ficam desabilitados sem Java
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Software que passa pelo teste." })).toBeVisible();
     await expect(page.locator(".type-text").first()).toHaveCSS("clip-path", "none");
-    await expect(page.getByRole("link", { name: "Explorar projetos" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Ver projetos", exact: true })).toBeVisible();
     await page.goto("/traceatlas");
     await expect(page.getByRole("combobox", { name: "Cenário", exact: true })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Executar cenário" })).toBeDisabled();
@@ -170,4 +170,19 @@ test("axe nas páginas principais e nos laboratórios", async ({ page }) => {
     const report = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
     expect(report.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) })), path).toEqual([]);
   }
+});
+
+test("projetos em destaque ligam cada resultado a um teste real e os números vêm do inventário", async ({ page }) => {
+  await page.goto("/");
+  const rows = page.locator(".case-row");
+  await expect(rows).toHaveCount(5);
+  for (const link of await rows.locator(".proof-link").all()) {
+    await expect(link).toHaveAttribute("href", /github\.com\/raphaelkaych\/[\w-]+\/blob\/main\/(e2e|tests)\/[\w.-]+\.ts$/);
+  }
+  const stats = page.locator(".hero-stats data");
+  await expect(stats).toHaveCount(4);
+  await expect.poll(() => stats.evaluateAll((items) => items.every((item) => item.textContent === item.getAttribute("value")))).toBe(true);
+  await expect(page.getByRole("list", { name: "Etapas do cenário" }).getByRole("listitem")).toHaveCount(6);
+  await page.getByRole("radio", { name: /Saldo insuficiente/ }).check();
+  await expect(page.getByRole("list", { name: "Etapas do cenário" }).getByRole("listitem")).toHaveCount(5);
 });

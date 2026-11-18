@@ -59,7 +59,7 @@ export function QualityGate() {
   return (
     <>
       <section className="lab-panel" aria-labelledby="qa-scenarios">
-        <p className="eyebrow">01 / CENÁRIO</p>
+        <p className="eyebrow">1. Cenário</p>
         <h2 id="qa-scenarios">Cenários de teste</h2>
         <fieldset className="scenario-options" disabled={!ready || pending}>
           <legend className="sr-only">Selecione um cenário</legend>
@@ -68,7 +68,7 @@ export function QualityGate() {
               <input type="radio" name="qa-scenario" value={key} checked={scenario === key}
                 onChange={() => { setScenario(key); setResult(undefined); setError(""); }} />
               <span className="scenario-copy">
-                <small>0{index + 1} / CENÁRIO</small>
+                <small>Cenário {index + 1}</small>
                 <strong>{scenarios[key].name}</strong>
                 <span>{scenarios[key].premise}</span>
               </span>
@@ -85,7 +85,7 @@ export function QualityGate() {
       </section>
       {result && (
         <section className="qa-results" aria-labelledby="qa-results-title">
-          <p className="eyebrow">02 / EXECUÇÃO</p>
+          <p className="eyebrow">2. Execução</p>
           <h2 id="qa-results-title">Resultado da execução</h2>
           <p className="lab-meta">{scenarios[result.scenario].defect} Os códigos abaixo são retornos do serviço de reserva exercitado pela API.</p>
           <div className="lab-grid">
@@ -96,7 +96,7 @@ export function QualityGate() {
       )}
       <section className="lab-panel qa-proof" aria-labelledby="qa-ci">
         <div>
-          <p className="eyebrow">03 / EVIDÊNCIAS</p>
+          <p className="eyebrow">3. Evidências</p>
           <h2 id="qa-ci">Histórico e artefatos de CI</h2>
           {result ? (
             <dl className="qa-assertions" aria-label="Assertivas da implementação com defeito">

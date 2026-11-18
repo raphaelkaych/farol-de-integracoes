@@ -85,7 +85,7 @@ export function ContractShield() {
   return (
     <div className="contract-grid">
       <section className="lab-panel contract-controls" aria-labelledby="contract-operation">
-        <p className="eyebrow">01 / OPERAÇÃO</p>
+        <p className="eyebrow">1. Operação</p>
         <h2 id="contract-operation">Escolha um cenário</h2>
         <label>Operação<select disabled={!ready || pending} value={scenario}
           onChange={(event) => { setScenario(event.target.value as Scenario); setResult(undefined); setError(""); }}>
@@ -114,7 +114,7 @@ export function ContractShield() {
         <a className="text-link" href="/contractshield.openapi.json">Ler contrato OpenAPI ↗</a>
       </section>
       <section className="lab-panel" aria-labelledby="contract-response">
-        <p className="eyebrow">02 / RESPOSTA DA API</p>
+        <p className="eyebrow">2. Resposta da API</p>
         <h2 id="contract-response">Inspecione o retorno</h2>
         <p className="lab-feedback" role="status">{pending ? "Consultando a API…" : error || (result ? (result.passed ? "Comportamento esperado verificado." : "Resposta diferente da expectativa do cenário.") : "Execute um cenário para ver as respostas HTTP.")}</p>
         {result?.results.map((item, index) => (

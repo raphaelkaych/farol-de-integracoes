@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const sources = {
   "qualitygate-studio": [
@@ -43,12 +43,25 @@ const excerpts = Object.fromEntries(Object.entries(sources).map(([slug, files]) 
   return { kind, file, line: start + 1, end: start + code.length, code: code.join("\n") };
 })]));
 
-const output = new URL("../lib/workspace-evidence.json", import.meta.url);
-const content = JSON.stringify(excerpts, null, 2) + "\n";
-if (process.argv.includes("--check")) {
-  if (readFileSync(output, "utf8").replace(/\r\n/g, "\n") !== content) {
-    throw new Error("Trechos do Workspace desatualizados. Execute node scripts/workspace-evidence.mjs.");
+// Numbers shown on the home page come from the test files themselves.
+function declaredTests(dir, pattern) {
+  const files = readdirSync(new URL("../" + dir, import.meta.url)).filter((name) => pattern.test(name)).sort();
+  const count = files.reduce((total, name) =>
+    total + (readFileSync(new URL("../" + dir + "/" + name, import.meta.url), "utf8").match(/^\s*test\(/gm) ?? []).length, 0);
+  return { files: files.length, tests: count };
+}
+const inventory = { browser: declaredTests("e2e", /\.spec\.ts$/), logic: declaredTests("tests", /\.test\.ts$/) };
+
+const outputs = [
+  [new URL("../lib/workspace-evidence.json", import.meta.url), JSON.stringify(excerpts, null, 2) + "\n"],
+  [new URL("../lib/test-inventory.json", import.meta.url), JSON.stringify(inventory, null, 2) + "\n"],
+];
+for (const [output, content] of outputs) {
+  if (process.argv.includes("--check")) {
+    if (readFileSync(output, "utf8").replace(/\r\n/g, "\n") !== content) {
+      throw new Error("Trechos ou inventário de testes desatualizados. Execute node scripts/workspace-evidence.mjs.");
+    }
+  } else {
+    writeFileSync(output, content);
   }
-} else {
-  writeFileSync(output, content);
 }

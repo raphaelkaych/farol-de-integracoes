@@ -43,7 +43,7 @@ export default async function DemoPage({ params }: { params: Promise<{ slug: str
     <main id="conteudo" tabIndex={-1} className="shell lab">
       <a className="back-link" href={"/projetos/" + slug}>← Estudo de caso</a>
       <div className="lab-title">
-        <p className="eyebrow"><span /> {lab.index} / DEMONSTRAÇÃO</p>
+        <p className="eyebrow">Demonstração no navegador</p>
         <h1>{lab.title}</h1>
         <p>{lab.description}</p>
         <a className="text-link" href={github + "/" + slug}>Ver código original <span aria-hidden="true">↗</span></a>

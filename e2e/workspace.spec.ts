@@ -23,7 +23,8 @@ test("Workspace abre código por URL, investiga arquitetura e aceita comandos po
 
 test("mapa da home ilustra um bloqueio e encaminha à arquitetura", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Simular bloqueio" }).click();
+  await page.getByRole("radio", { name: /Perfil sem permissão/ }).check();
+  await page.getByRole("button", { name: "Executar fluxo" }).click();
   await expect(page.getByText("HTTP 403", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Abrir arquitetura" })).toHaveAttribute("href", "/workspace?projeto=ledgerflow&painel=arquitetura");
 });

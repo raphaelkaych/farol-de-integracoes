@@ -137,7 +137,7 @@ export function TraceAtlas() {
             {selected && <Timeline key={selected.id + service} trace={selected} service={service} />}
           </div>
           <section className="lab-panel trace-probe" aria-labelledby="trace-probe-title">
-            <p className="eyebrow">MEDIÇÃO REAL DA DEMO</p>
+            <p className="eyebrow">Medição real da demo</p>
             <h2 id="trace-probe-title">Sonda do banco D1</h2>
             <p className="lab-meta">A rota executou uma consulta de prontidão no banco do site. Essa medida fica separada das latências simuladas acima.</p>
             <p><strong>{run.probe.status === "disponivel" ? "Disponível" : "Indisponível"}</strong> · {run.probe.durationMs} ms</p>

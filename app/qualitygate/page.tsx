@@ -12,7 +12,7 @@ export default function QualityGatePage() {
     <main id="conteudo" tabIndex={-1} className="shell lab">
       <a className="back-link" href="/projetos/qualitygate-studio">← Estudo de caso</a>
       <div className="lab-title">
-        <p className="eyebrow"><span /> QUALITY ENGINEERING / LAB 01</p>
+        <p className="eyebrow">Quality engineering</p>
         <h1>QualityGate Studio</h1>
         <p>Teste um serviço de reserva de estoque sob condições controladas. A API executa o mesmo pedido em dois ambientes isolados e verifica a regra que deveria se manter.</p>
       </div>
