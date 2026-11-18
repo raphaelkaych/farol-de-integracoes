@@ -125,13 +125,15 @@ code, kbd, pre { font-family: var(--mono); }
 .footer-inner a { color: var(--muted); }
 
 /* Status dot that breathes while something is live. */
-.live-dot { display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 0 #82dcb966; }
+.live-dot { position: relative; display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: var(--success); }
+.live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #82dcb966; opacity: 0; }
 
 @media (prefers-reduced-motion: no-preference) {
   .button:not(:disabled):hover { transform: translateY(-1px); }
   .button:not(:disabled):active { transform: translateY(0) scale(.98); }
-  .live-dot { animation: live-breathe 2.4s ease-in-out infinite; }
-  @keyframes live-breathe { 0%, 100% { box-shadow: 0 0 0 0 #82dcb966; } 60% { box-shadow: 0 0 0 6px #82dcb900; } }
+  /* Transform and opacity only, so the pulse stays on the compositor. */
+  .live-dot::after { animation: live-breathe 2.4s ease-out infinite; }
+  @keyframes live-breathe { 0% { opacity: .9; transform: scale(1); } 70%, 100% { opacity: 0; transform: scale(2.6); } }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

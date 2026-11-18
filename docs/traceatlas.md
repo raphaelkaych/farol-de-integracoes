@@ -1,6 +1,6 @@
 # TraceAtlas
 
-[Demo pública](https://raphael-kaych.raphaelvindex.chatgpt.site/traceatlas) · [Estudo de caso](https://raphael-kaych.raphaelvindex.chatgpt.site/projetos/traceatlas)
+[Demo pública](https://raphael-kaych.raphaelkaych.workers.dev/traceatlas) · [Estudo de caso](https://raphael-kaych.raphaelkaych.workers.dev/projetos/traceatlas)
 
 O laboratório simula nove pedidos por execução. É possível comparar um fluxo normal, uma consulta lenta, indisponibilidade do banco, falha do worker, indisponibilidade do ERP e recuperação do ERP.
 

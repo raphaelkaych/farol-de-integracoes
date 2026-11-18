@@ -1,6 +1,6 @@
 # ContractShield
 
-O laboratório registra mudanças fictícias em três serviços. Mudanças em cobrança exigem janela noturna. O visitante escolhe um cenário e compara a expectativa com a resposta HTTP que o Worker realmente devolveu. [Demonstração](https://raphael-kaych.raphaelvindex.chatgpt.site/contractshield) · [Contrato OpenAPI](../public/contractshield.openapi.json)
+O laboratório registra mudanças fictícias em três serviços. Mudanças em cobrança exigem janela noturna. O visitante escolhe um cenário e compara a expectativa com a resposta HTTP que o Worker realmente devolveu. [Demonstração](https://raphael-kaych.raphaelkaych.workers.dev/contractshield) · [Contrato OpenAPI](../public/contractshield.openapi.json)
 
 | Fluxo | Evidência |
 | --- | --- |

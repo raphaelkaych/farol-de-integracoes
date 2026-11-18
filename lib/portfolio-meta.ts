@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const siteUrl = "https://raphael-kaych.raphaelvindex.chatgpt.site";
+export const siteUrl = "https://raphael-kaych.raphaelkaych.workers.dev";
 export const github = "https://github.com/raphaelkaych";
 export const siteRepository = github + "/farol-de-integracoes";
 export const vindexPath = "/trajetoria#vindex-fiscal";

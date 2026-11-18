@@ -1,6 +1,6 @@
 # LedgerFlow
 
-[Demo pública](https://raphael-kaych.raphaelvindex.chatgpt.site/ledgerflow) · [Estudo de caso](https://raphael-kaych.raphaelvindex.chatgpt.site/projetos/ledgerflow) · [OpenAPI](../public/api-contract.json)
+[Demo pública](https://raphael-kaych.raphaelkaych.workers.dev/ledgerflow) · [Estudo de caso](https://raphael-kaych.raphaelkaych.workers.dev/projetos/ledgerflow) · [OpenAPI](../public/api-contract.json)
 
 O sistema compara um extrato bancário fictício com lançamentos do sistema. A sessão de analista permite importar, criar, editar, remover e conciliar. A sessão de leitor pode consultar, filtrar e exportar o recorte. As alterações manuais ficam no histórico da sessão.
 
