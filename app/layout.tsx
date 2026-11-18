@@ -4,8 +4,7 @@ import { github, siteUrl } from "../lib/portfolio-meta";
 import "./globals.css";
 import "./portfolio.css";
 import "./labs.css";
-import "./motion.css";
-import "./workbench.css";
+import "./home.css";
 import "./project-previews.css";
 
 const description = "Portfólio de Raphael Kaych. Projetos de desenvolvimento full stack, APIs, testes e integração de sistemas, com demos e código público.";
@@ -30,7 +29,11 @@ const identity = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossOrigin="" />
+      </head>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         <a className="skip-link" href="#conteudo">Ir para o conteúdo</a>
         <SiteHeader />
         {children}

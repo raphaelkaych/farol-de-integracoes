@@ -1,4 +1,5 @@
 import { casePath, type Project } from "../lib/project-index";
+import { evidence } from "../lib/project-evidence";
 import { analyze } from "../lib/traceatlas/model";
 
 export function ProjectPreview({ slug }: { slug: string }) {
@@ -132,11 +133,37 @@ export function ProjectPreview({ slug }: { slug: string }) {
   );
 }
 
+// Home: problem, decision and verifiable result next to a concrete preview.
+export function ProjectRow({ project }: { project: Project }) {
+  const proof = evidence[project.slug];
+  return (
+    <li className="case-row" data-enter>
+      <article className="project-card" aria-labelledby={"row-" + project.slug}>
+        <div className="case-row-copy">
+          <p className="case-row-area"><span className="live-dot" aria-hidden="true" /> {project.label}</p>
+          <h3 id={"row-" + project.slug}><a href={casePath(project.slug)}>{project.name}</a></h3>
+          <dl className="case-steps">
+            <div><dt>Problema</dt><dd>{proof.problem}</dd></div>
+            <div><dt>Decisão</dt><dd>{proof.decision}</dd></div>
+            <div><dt>Resultado</dt><dd>{proof.result} <a className="proof-link" href={proof.test.href}>{proof.test.label}</a></dd></div>
+          </dl>
+          <div className="case-row-actions">
+            <a className="button button-primary button-compact" href={project.demo} aria-label={"Abrir a demo de " + project.name}>Abrir demo</a>
+            <a className="text-link" href={casePath(project.slug)} aria-label={"Estudo de caso de " + project.name}>Estudo de caso</a>
+            <a className="text-link" href={project.code} aria-label={"Código de " + project.name}>Código</a>
+          </div>
+        </div>
+        <ProjectPreview slug={project.slug} />
+      </article>
+    </li>
+  );
+}
+
 export function ProjectCard({ project, featured = false }: { project: Project; featured?: boolean }) {
   return (
     <article className={"project-card" + (featured ? " project-feature" : "")} aria-labelledby={"card-" + project.slug}>
       <div className="project-content">
-        <div className="card-kicker"><span className="eyebrow">{project.index} / {project.label}</span><span className="live-label"><i /> Demo online</span></div>
+        <div className="card-kicker"><span className="eyebrow">{project.label}</span><span className="live-label"><span className="live-dot" aria-hidden="true" /> Demo online</span></div>
         <h3 id={"card-" + project.slug}><a href={casePath(project.slug)}>{project.name}</a></h3>
         <p>{project.summary}</p>
         <div className="tags">{project.stack.map((tag) => <span key={tag}>{tag}</span>)}</div>
