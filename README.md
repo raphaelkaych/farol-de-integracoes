@@ -1,17 +1,17 @@
 # Portfólio de engenharia · Raphael Kaych
 
-[Portfólio público](https://raphael-kaych.raphaelvindex.chatgpt.site/) · [Developer Workspace](https://raphael-kaych.raphaelvindex.chatgpt.site/workspace) · [Vitrine de projetos](https://raphael-kaych.raphaelvindex.chatgpt.site/projetos) · [Execuções de CI](https://github.com/raphaelkaych/farol-de-integracoes/actions/workflows/validar.yml)
+[Portfólio público](https://raphael-kaych.raphaelkaych.workers.dev/) · [Developer Workspace](https://raphael-kaych.raphaelkaych.workers.dev/workspace) · [Vitrine de projetos](https://raphael-kaych.raphaelkaych.workers.dev/projetos) · [Execuções de CI](https://github.com/raphaelkaych/farol-de-integracoes/actions/workflows/validar.yml)
 
 Aplicação que reúne estudos de caso e laboratórios de desenvolvimento, qualidade e integração de sistemas. O repositório começou como Farol de Integrações e hoje também contém a vitrine e os demais laboratórios abaixo.
 
 | Laboratório | Código e documentação | Demo |
 | --- | --- | --- |
-| QualityGate Studio | [Comparação de referência e defeito](docs/qualitygate-studio.md) | [Executar cenários](https://raphael-kaych.raphaelvindex.chatgpt.site/qualitygate) |
-| ContractShield | [Contrato, escopo e concorrência](docs/contractshield.md) | [Consultar outro escopo](https://raphael-kaych.raphaelvindex.chatgpt.site/contractshield) |
-| LedgerFlow | [Conciliação e auditoria](docs/ledgerflow.md) | [Importar um extrato fictício](https://raphael-kaych.raphaelvindex.chatgpt.site/ledgerflow) |
-| Farol de Integrações | [Retentativas e recuperação](docs/farol.md) | [Recuperar um pedido](https://raphael-kaych.raphaelvindex.chatgpt.site/farol) |
-| TraceAtlas | [Rastros, correlação e latência](docs/traceatlas.md) | [Investigar uma falha](https://raphael-kaych.raphaelvindex.chatgpt.site/traceatlas) |
-| Radar de Retorno | [Validação de respostas de integração](lib/return-radar.ts) | [Validar uma resposta](https://raphael-kaych.raphaelvindex.chatgpt.site/radar-de-retorno) |
+| QualityGate Studio | [Comparação de referência e defeito](docs/qualitygate-studio.md) | [Executar cenários](https://raphael-kaych.raphaelkaych.workers.dev/qualitygate) |
+| ContractShield | [Contrato, escopo e concorrência](docs/contractshield.md) | [Consultar outro escopo](https://raphael-kaych.raphaelkaych.workers.dev/contractshield) |
+| LedgerFlow | [Conciliação e auditoria](docs/ledgerflow.md) | [Importar um extrato fictício](https://raphael-kaych.raphaelkaych.workers.dev/ledgerflow) |
+| Farol de Integrações | [Retentativas e recuperação](docs/farol.md) | [Recuperar um pedido](https://raphael-kaych.raphaelkaych.workers.dev/farol) |
+| TraceAtlas | [Rastros, correlação e latência](docs/traceatlas.md) | [Investigar uma falha](https://raphael-kaych.raphaelkaych.workers.dev/traceatlas) |
+| Radar de Retorno | [Validação de respostas de integração](lib/return-radar.ts) | [Validar uma resposta](https://raphael-kaych.raphaelkaych.workers.dev/radar-de-retorno) |
 
 ## Instalação local
 
@@ -48,7 +48,8 @@ Os trechos do Workspace são extraídos do código com `node scripts/workspace-e
 - [Auditoria e decisões da Missão 2.0](docs/missao-2.md)
 - [Arquitetura, design e deploy](docs/arquitetura-portfolio.md)
 - [Redesign: a bancada de requisição](docs/redesign-bancada.md)
-- [Transferência para o Claude Code e fluxo de publicação](docs/transferencia-claude-code.md)
+- [Transferência para o Claude Code](docs/transferencia-claude-code.md)
+- [Hospedagem na Cloudflare: publicação e reversão](docs/hospedagem-cloudflare.md)
 - [Pesquisa de mercado e referências](docs/mercado-e-referencias.md)
 - [Contrato OpenAPI](public/api-contract.json)
 - [OpenAPI do ContractShield](public/contractshield.openapi.json)

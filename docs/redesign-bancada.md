@@ -50,6 +50,10 @@ O trace da versão anterior mostrou 2,5 s de estilo e layout contra 0,35 s de ex
 
 O LCP local fica acima de 2,5 s com qualquer versão. O servidor local responde mais devagar que a produção: na base, a produção mediu 0,6 s a menos. A estimativa em produção é de cerca de 2,0 s, a confirmar depois da publicação. A Geist agora tem `preload`, o que tirou o CLS do Workspace e antecipou o FCP. INP precisa de dados de campo.
 
+### Desempenho em produção (Cloudflare)
+
+Na nova hospedagem, o PageSpeed Insights mediu no celular desempenho 98, LCP 1,2 s, TBT 0 ms e CLS 0. As seções abaixo da dobra usam `content-visibility: auto`, e as animações contínuas (pulso dos pontos ao vivo e órbita do diagrama) passaram para `transform` e `opacity`. Isso reduz o estilo e o layout calculados na carga.
+
 ## Validação
 
 `npm run lint`, `npm run typecheck`, `npm test`, `node scripts/workspace-evidence.mjs --check`, `npm run build` e `npm run test:e2e` passam localmente e no CI. As capturas de `e2e/visual.spec.ts` mudaram de propósito e foram substituídas pelas do artefato do CI no Linux, depois de revisadas.

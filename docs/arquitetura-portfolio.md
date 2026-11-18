@@ -1,6 +1,6 @@
 # Arquitetura e direção visual
 
-O portfólio é servido por um Worker no Sites. A interface usa React com App Router e Vinext. A hospedagem mantém o repositório de fonte e a identidade do site. O GitHub público contém o espelho de desenvolvimento e a suíte de CI. O README do perfil tem apresentação e links em seu próprio repositório.
+O portfólio é servido por um Worker na conta Cloudflare do proprietário, com D1 como banco. A interface usa React com App Router e Vinext. A publicação está descrita em [hospedagem-cloudflare.md](hospedagem-cloudflare.md). O GitHub público contém o espelho de desenvolvimento e a suíte de CI. O README do perfil tem apresentação e links em seu próprio repositório.
 
 | Camada | Caminhos |
 | --- | --- |
@@ -21,4 +21,4 @@ O design usa a paleta Midnight Navy do briefing, Geist para interface e títulos
 
 A escolha de manter D1 permite demonstrar concorrência e persistência na mesma infraestrutura que já atende o Farol. O QualityGate usa estado por requisição, suficiente para comparar variantes. O LedgerFlow faz escrita e auditoria em um lote SQL. A migração `0001` cria as tabelas de conciliação. A migração `0002` cria as tabelas de sessões temporárias e mudanças do ContractShield. O TraceAtlas gera rastros em memória e consulta o banco em modo de leitura para medir a prontidão real da demo.
 
-O CI verifica dependências de produção, lint, tipos, lógica, build, navegação, API, acessibilidade automatizada e regressão visual. A publicação de produção usa o versionamento do Sites. Os contratos são versionados junto com a aplicação. [Demos existentes](../public/api-contract.json) · [ContractShield](../public/contractshield.openapi.json)
+O CI verifica dependências de produção, lint, tipos, lógica, build, navegação, API, acessibilidade automatizada e regressão visual. A publicação de produção usa as versões de Worker da Cloudflare, com reversão por `wrangler rollback`. Os contratos são versionados junto com a aplicação. [Demos existentes](../public/api-contract.json) · [ContractShield](../public/contractshield.openapi.json)

@@ -30,7 +30,7 @@ npm run test:e2e
 
 ## Regras
 
-- Trabalhe em branch própria e abra PR para `main`. Merge no GitHub não publica o site: a produção é publicada pelo fluxo do Sites, por decisão do proprietário.
+- Trabalhe em branch própria e abra PR para `main`. Merge no GitHub não publica o site. A produção é o Worker `raphael-kaych` na conta Cloudflare do proprietário, publicado com `npm run deploy` depois do build; publique só com o pedido do proprietário. Detalhes em [docs/hospedagem-cloudflare.md](docs/hospedagem-cloudflare.md).
 - Use apenas dados fictícios. Nenhuma credencial em código, logs, evidências ou capturas.
 - O caso negativo do QualityGate falha de propósito e faz parte da demonstração.
 - Movimento precisa de pausa, de alternativa para `prefers-reduced-motion` e de parada fora da viewport ou com a aba oculta.

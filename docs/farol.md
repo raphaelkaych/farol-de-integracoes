@@ -2,7 +2,7 @@
 
 Um pedido chega ao ERP durante uma indisponibilidade. O Farol registra o evento, limita as retentativas e mantém o histórico quando o pedido precisa voltar da quarentena para a fila.
 
-**[Abrir a demonstração](https://raphael-kaych.raphaelvindex.chatgpt.site/farol)** · [Estudo de caso](https://raphael-kaych.raphaelvindex.chatgpt.site/projetos/farol-de-integracoes) · [Pesquisa de mercado](mercado-e-referencias.md) · [Execuções dos testes](https://github.com/raphaelkaych/farol-de-integracoes/actions)
+**[Abrir a demonstração](https://raphael-kaych.raphaelkaych.workers.dev/farol)** · [Estudo de caso](https://raphael-kaych.raphaelkaych.workers.dev/projetos/farol-de-integracoes) · [Pesquisa de mercado](mercado-e-referencias.md) · [Execuções dos testes](https://github.com/raphaelkaych/farol-de-integracoes/actions)
 
 ## Teste em um minuto
 

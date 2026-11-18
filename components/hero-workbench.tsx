@@ -130,13 +130,15 @@ export function HeroWorkbench() {
 
         <div className="workbench-art">
           <div className="wb-light" />
+          <div className="wb-figure">
+          {/* HTML ring so its rotation runs on the compositor, not as an SVG repaint. */}
+          <div className="wb-orbit" aria-hidden="true" />
           <svg className="wb-diagram" viewBox="0 0 600 278" aria-hidden="true" focusable="false">
             <defs>
               <linearGradient id={uid + "-node"} x2="0" y2="1"><stop stopColor="#132a4a" /><stop offset="1" stopColor="#08101f" /></linearGradient>
               <radialGradient id={uid + "-aura"}><stop stopColor="#377ffb" stopOpacity=".2" /><stop offset="1" stopColor="#377ffb" stopOpacity="0" /></radialGradient>
             </defs>
             <ellipse className="wb-aura" cx="300" cy="138" rx="230" ry="130" fill={"url(#" + uid + "-aura)"} />
-            <circle className="wb-orbit" cx="300" cy="132" r="79" />
             <g className="wb-tracks"><path d={paths.outbound} /><path d={paths.write} /><path d={paths.back} /></g>
             <g className="wb-route" data-active={active}><path className="wb-route-in" d={paths.outbound} /><path className="wb-route-out" d={paths.write} /></g>
             {layers.map((layer, index) => <g className="wb-node" data-selected={active === index} data-rejected={hasError && index === 1} key={layer.label} style={{ "--i": index } as CSSProperties} transform={"translate(" + (40 + index * 200) + " 76)"}>
@@ -153,6 +155,7 @@ export function HeroWorkbench() {
             {running && step.path && <path key={play.run + "/" + step.id} className="wb-packet" d={step.path} pathLength="1" />}
             <text className="wb-return-label" x="300" y="253" textAnchor="middle">{hasError ? "recusa na API · nenhum dado gravado" : "requisição e retorno"}</text>
           </svg>
+          </div>
         </div>
 
         <div className="wb-readout">
