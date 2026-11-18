@@ -9,20 +9,20 @@ export default function CareerPage() {
     <main id="conteudo" tabIndex={-1} className="shell inner-page career-page">
       <a className="back-link" href="/#trajetoria">← Voltar ao portfólio</a>
       <header className="page-intro">
-        <p className="eyebrow"><span /> CURRÍCULO ONLINE</p><h1>Raphael Kaych</h1>
+        <p className="eyebrow">Currículo online</p><h1>Raphael Kaych</h1>
         <p>Desenvolvimento de software, qualidade e sustentação de sistemas.</p>
         <PrintButton />
         <div className="links resume-quick">
-          <a className="text-link" href="/projetos">Projetos e demonstrações ↗</a>
-          <a className="text-link" href="/workspace?painel=testes">Testes e código ↗</a>
-          <a className="text-link" href={github}>GitHub ↗</a>
+          <a className="text-link" href="/projetos">Projetos e demonstrações</a>
+          <a className="text-link" href="/workspace?painel=testes">Testes e código</a>
+          <a className="text-link" href={github}>GitHub <span aria-hidden="true">↗</span></a>
         </div>
       </header>
       <h2 className="sr-only">Experiência e formação</h2>
       <Career />
       <VindexFeature heading="h2" />
       <ResumeDetails />
-      <h2 className="eyebrow milestone-label">PROJETOS PRÓPRIOS E ACADÊMICOS</h2>
+      <h2 className="milestone-label">Projetos próprios e acadêmicos</h2>
       <Milestones />
     </main>
   );

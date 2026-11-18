@@ -156,7 +156,7 @@ export function LedgerFlow() {
     <>
       <div className="lab-panel ledger-session">
         <div>
-          <p className="eyebrow">AMBIENTE DE DEMONSTRAÇÃO</p>
+          <p className="eyebrow">Ambiente de demonstração</p>
           <h2>{view ? (view.role === "analista" ? "Sessão de analista" : "Sessão de leitor") : "Abra uma sessão"}</h2>
           <p className="lab-meta">Dados fictícios e acesso por duas horas. Cada perfil abre uma sessão isolada.</p>
         </div>

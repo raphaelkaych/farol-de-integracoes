@@ -12,9 +12,9 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
     <main id="conteudo" tabIndex={-1} className="shell inner-page">
       <a className="back-link" href="/">← Início</a>
       <header className="page-intro">
-        <p className="eyebrow"><span /> ÍNDICE / LABORATÓRIOS</p><h1>Projetos</h1>
-        <p>Explore o problema, as decisões técnicas, o código e a demonstração de cada projeto.</p>
-        <a className="text-link" href={vindexPath}>Conhecer o Vindex Fiscal <span aria-hidden="true">↗</span></a>
+        <h1>Projetos</h1>
+        <p>Nove laboratórios que rodam no navegador. Cada um tem estudo de caso, código e testes abertos.</p>
+        <a className="text-link" href={vindexPath}>Conhecer o Vindex Fiscal</a>
       </header>
       <nav className="project-filters" aria-label="Filtrar projetos">
         {(Object.entries(categories) as [Category, string][]).map(([key, label]) => (

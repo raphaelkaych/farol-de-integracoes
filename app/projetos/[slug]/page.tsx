@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ProjectPreview } from "../../../components/project-card";
 import { cases } from "../../../lib/project-cases";
+import { evidence } from "../../../lib/project-evidence";
 import { casePath, findProject, projects } from "../../../lib/project-index";
 import { pageMetadata, siteRepository } from "../../../lib/portfolio-meta";
 
@@ -33,6 +34,7 @@ export default async function CasePage({ params }: Props) {
   const project = findProject(slug);
   const detail = cases.find((item) => item.slug === slug);
   if (!project || !detail) notFound();
+  const proof = evidence[slug];
   const inWorkspace = project.code.startsWith(siteRepository);
   const contract = slug === "contractshield" ? "/contractshield.openapi.json" : slug === "radar-de-retorno" ? project.code : "/api-contract.json";
 
@@ -41,19 +43,26 @@ export default async function CasePage({ params }: Props) {
       <a className="back-link" href="/projetos">← Todos os projetos</a>
       <header className="case-hero">
         <div className="page-intro">
-          <p className="eyebrow"><span /> {project.index} / {project.label}</p>
+          <p className="eyebrow">{project.label}</p>
           <h1>{project.name}</h1><p>{project.summary}</p>
           <div className="tags">{project.stack.map((tag) => <span key={tag}>{tag}</span>)}</div>
           <div className="links">
-            <a className="button button-primary" href={project.demo}>Abrir demonstração <span aria-hidden="true">↗</span></a>
-            <a className="button button-outline" href={project.code}>Ver código <span aria-hidden="true">↗</span></a>
+            <a className="button button-primary" href={project.demo}>Abrir demonstração</a>
+            <a className="button button-outline" href={project.code}>Ver código</a>
           </div>
         </div>
         <ProjectPreview slug={slug} />
       </header>
+      {proof && (
+        <ol className="case-proof" aria-label="Resumo do caso">
+          <li><h2>Problema</h2><p>{proof.problem}</p></li>
+          <li><h2>Decisão</h2><p>{proof.decision}</p></li>
+          <li><h2>Resultado</h2><p>{proof.result}</p><a className="proof-link" href={proof.test.href}>{proof.test.label}</a></li>
+        </ol>
+      )}
       <div className="case-layout">
         <aside className="case-sidebar">
-          <nav aria-label="Neste estudo"><p className="eyebrow">NESTE ESTUDO</p>
+          <nav aria-label="Neste estudo"><p className="case-nav-title">Neste estudo</p>
             {sections.map(([id, label]) => <a key={id} href={"#" + id}>{label}</a>)}
           </nav>
         </aside>
@@ -66,12 +75,12 @@ export default async function CasePage({ params }: Props) {
             <div className="architecture">
               {detail.architecture.map((stage, index) => (
                 <details key={stage.title} name="etapa" open={index === 0}>
-                  <summary><code>0{index + 1}</code><strong>{stage.title}</strong><span aria-hidden="true">+</span></summary>
+                  <summary><code>{index + 1}</code><strong>{stage.title}</strong><span aria-hidden="true">+</span></summary>
                   <p>{stage.text}</p>
                 </details>
               ))}
             </div>
-            {inWorkspace && <a className="text-link" href={"/workspace?projeto=" + slug + "&painel=arquitetura"}>Explorar entradas, saídas e falhas no Workspace ↗</a>}
+            {inWorkspace && <a className="text-link" href={"/workspace?projeto=" + slug + "&painel=arquitetura"}>Explorar entradas, saídas e falhas no Workspace</a>}
           </section>
           <section id="decisoes" className="case-section">
             <h2>Decisões e desafios</h2>
@@ -86,10 +95,10 @@ export default async function CasePage({ params }: Props) {
           <section id="qualidade" className="case-section">
             <h2>Segurança e estratégia de testes</h2><p>{detail.quality}</p><p>{detail.tests}</p>
             <div className="links">
-              {inWorkspace && <a className="text-link" href={siteRepository + "/actions/workflows/validar.yml"}>Execuções no GitHub Actions ↗</a>}
-              {inWorkspace && <a className="text-link" href={contract}>{slug === "radar-de-retorno" ? "Schema da validação" : "Contrato HTTP"} ↗</a>}
-              {inWorkspace && <a className="text-link" href={"/workspace?projeto=" + slug + "&painel=testes"}>Explorar testes ↗</a>}
-              {!inWorkspace && <a className="text-link" href={project.code}>Instruções e testes no repositório ↗</a>}
+              {inWorkspace && <a className="text-link" href={siteRepository + "/actions/workflows/validar.yml"}>Execuções no GitHub Actions</a>}
+              {inWorkspace && <a className="text-link" href={contract}>{slug === "radar-de-retorno" ? "Schema da validação" : "Contrato HTTP"}</a>}
+              {inWorkspace && <a className="text-link" href={"/workspace?projeto=" + slug + "&painel=testes"}>Explorar testes</a>}
+              {!inWorkspace && <a className="text-link" href={project.code}>Instruções e testes no repositório</a>}
             </div>
             {slug === "qualitygate-studio" && (
               <details className="case-evidence">
@@ -105,11 +114,11 @@ export default async function CasePage({ params }: Props) {
           </section>
           <section id="demo" className="case-section case-demo">
             <h2>Experimente o fluxo</h2><p>{project.summary}</p>
-            <a className="button button-primary" href={project.demo}>Abrir demonstração ↗</a>
+            <a className="button button-primary" href={project.demo}>Abrir demonstração</a>
           </section>
           <section id="limites" className="case-section">
             <h2>Limites e próximos passos</h2><p>{detail.limits}</p><p>{detail.next}</p>
-            <a className="text-link" href={project.code}>Abrir código e documentação ↗</a>
+            <a className="text-link" href={project.code}>Abrir código e documentação</a>
           </section>
         </div>
       </div>

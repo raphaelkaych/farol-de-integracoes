@@ -8,7 +8,7 @@ export default function ReturnRadarPage() {
     <main id="conteudo" tabIndex={-1} className="shell lab">
       <a className="back-link" href="/projetos/radar-de-retorno">← Estudo de caso</a>
       <header className="lab-title">
-        <p className="eyebrow"><span /> CONTRATOS DE API / LAB 08</p>
+        <p className="eyebrow">Contratos de API</p>
         <h1>Radar de Retorno</h1>
         <p>Escolha uma resposta fictícia. Compare o código HTTP com o conteúdo para decidir se o fluxo pode avançar, aguardar ou pedir revisão.</p>
       </header>

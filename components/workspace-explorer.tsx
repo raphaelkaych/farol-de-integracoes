@@ -47,7 +47,7 @@ function Architecture({ entry }: { entry: WorkspaceProject }) {
       <ol className="ws-flow" aria-label="Componentes do sistema">
         {entry.nodes.map((_, index) => <li key={index}>
           <button type="button" aria-pressed={selected === index} disabled={!ready} onClick={() => setSelected(index)}>
-            <code>0{index + 1}</code>{entry.detail.architecture[index].title}
+            <code>{index + 1}</code>{entry.detail.architecture[index].title}
           </button>
         </li>)}
       </ol>
@@ -84,12 +84,12 @@ function Terminal({ entry, onPanel }: { entry: WorkspaceProject; onPanel: (panel
     if (!action) return;
     const outputs: Record<Command, ReactNode> = {
       help: commands.join(" · "),
-      projects: <a href="/projetos">Abrir o catálogo completo ↗</a>,
+      projects: <a href="/projetos">Abrir o catálogo completo</a>,
       skills: entry.project.stack.join(" · "),
       architecture: "Painel de arquitetura aberto.",
       tests: "Painel de testes aberto.",
       github: <a href={entry.project.code}>Abrir o código no GitHub ↗</a>,
-      contact: <a href="/#contato">Ver os canais de contato ↗</a>,
+      contact: <a href="/#contato">Ver os canais de contato</a>,
     };
     const output = Object.hasOwn(outputs, action) ? outputs[action as Command] : "Comando desconhecido. Digite help para ver a lista.";
     if (action === "architecture") onPanel("arquitetura");
@@ -106,7 +106,7 @@ function Terminal({ entry, onPanel }: { entry: WorkspaceProject; onPanel: (panel
 
   return (
     <section className="ws-terminal" aria-labelledby="ws-terminal-title">
-      <header><h2 id="ws-terminal-title">Terminal demonstrativo</h2><span>COMANDOS DA INTERFACE</span></header>
+      <header><h2 id="ws-terminal-title">Terminal demonstrativo</h2><span>Aceita só comandos da interface, sem shell</span></header>
       <div className="ws-log" ref={log} role="log" aria-label="Respostas do terminal" aria-live="polite" aria-relevant="additions" tabIndex={0}>
         {history.length ? history.map((item) => (
           <div key={item.id}><code>$ {item.command}</code><p>{item.output}</p></div>
@@ -151,7 +151,7 @@ function PanelContent({ entry, panel }: { entry: WorkspaceProject; panel: Panel 
       <p>{test.result}</p>
       <div className="ws-resource-links">
         <a href={test.link}>Execução e artefatos no GitHub Actions ↗</a>
-        <a href={"/projetos/" + project.slug + "#qualidade"}>Estratégia de segurança e testes ↗</a>
+        <a href={"/projetos/" + project.slug + "#qualidade"}>Estratégia de segurança e testes</a>
         {project.slug === "qualitygate-studio" && <a href="/evidencias/qualitygate-permissao.png">Captura real do teste de autorização ↗</a>}
         {project.slug === "contractshield" && <a href="/contractshield.openapi.json">Contrato OpenAPI do laboratório ↗</a>}
       </div>
@@ -190,25 +190,25 @@ export function WorkspaceExplorer({ entries, panels, initialSlug, initialPanel }
       <div className="ws-bar">
         <span className="ws-mark" aria-hidden="true">⌘</span>
         <code>raphael-kaych / {entry.project.slug}</code>
-        <span className="ws-bar-note">CÓDIGO E TESTES VERIFICÁVEIS</span>
+        <span className="ws-bar-note">Trechos conferidos pelo CI</span>
       </div>
       <div className="ws-layout">
         <aside className="ws-sidebar">
-          <p className="eyebrow">EXPLORADOR</p>
+          <p className="ws-sidebar-title">Projetos</p>
           <nav aria-label="Projetos no Workspace">
             {entries.map(({ project }) => <a href={path(project.slug, panel)} key={project.slug}
               aria-current={slug === project.slug ? "page" : undefined} onClick={(event) => follow(event, project.slug, panel)}>
-              <code>{project.index}</code> {project.name}
+              {project.name}
             </a>)}
           </nav>
-          <a className="text-link" href="/projetos">Catálogo completo ↗</a>
+          <a className="text-link" href="/projetos">Catálogo completo</a>
         </aside>
         <div className="ws-main">
           <header className="ws-project">
             <div><p className="eyebrow">{entry.project.label}</p><p className="ws-project-title">{entry.project.name}</p></div>
             <div className="links">
-              <a className="button button-compact button-outline" href={"/projetos/" + slug}>Estudo de caso ↗</a>
-              <a className="button button-compact button-primary" href={entry.project.demo}>Abrir demo ↗</a>
+              <a className="button button-compact button-outline" href={"/projetos/" + slug}>Estudo de caso</a>
+              <a className="button button-compact button-primary" href={entry.project.demo}>Abrir demo</a>
             </div>
           </header>
           <nav className="ws-panels" aria-label="Painéis do Workspace">
@@ -221,7 +221,7 @@ export function WorkspaceExplorer({ entries, panels, initialSlug, initialPanel }
           <Terminal entry={entry} onPanel={(next) => select(slug, next)} />
         </div>
       </div>
-      <footer className="ws-footer"><a href={github}>Perfil GitHub ↗</a><a href="/trajetoria">Currículo online ↗</a></footer>
+      <footer className="ws-footer"><a href={github}>Perfil GitHub ↗</a><a href="/trajetoria">Currículo online</a></footer>
     </div>
   );
 }
