@@ -59,3 +59,14 @@ O LCP local fica acima de 2,5 s com qualquer versão. O servidor local responde 
 1. Revisar e fazer merge do PR em `main`.
 2. Sincronizar a fonte do SHA de merge com o repositório gerenciado do Sites, gerar o build empacotado, salvar a versão e publicar. Não há migração nova.
 3. Para reverter, republicar no Sites a versão 8, que corresponde a `17c7b24`.
+
+## Antes e depois
+
+| | Antes | Depois |
+| --- | --- | --- |
+| Home, 1600 px | ![Abertura anterior](redesign/antes-home-1600-fold.png) | ![Nova abertura com a bancada](redesign/depois-home-1600-fold.png) |
+| Home, 390 px | ![Abertura anterior no celular](redesign/antes-home-390-fold.png) | ![Nova abertura no celular](redesign/depois-home-390-fold.png) |
+| Estudo de caso, 1280 px | ![Estudo anterior](redesign/antes-caso-qualitygate-1280-fold.png) | ![Estudo com problema, decisão e resultado](redesign/depois-caso-qualitygate-1280-fold.png) |
+| Workspace, 390 px | ![Workspace anterior no celular](redesign/antes-workspace-390-fold.png) | ![Workspace com projetos em linha rolável](redesign/depois-workspace-390-fold.png) |
+
+Capturas da prévia local em Chromium, com movimento reduzido para mostrar o estado final.
